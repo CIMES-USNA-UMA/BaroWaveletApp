@@ -1198,13 +1198,15 @@ server <- function(input, output, session) {
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Results <- PlotAnalyzedTF(framework, index = chosen_analysis, method = "cwt", tem = TRUE, newPlot = FALSE,
                                 thr = input$coherence_val)
-      return(list(src = Results, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
+      #return(list(src = Results, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
+      return(list(src = Results, contentType = "image/png", width = "100%", height = "100%", alt = "CWT Transfer Function"))
     } else {
       blank <- tempfile(fileext = ".png")
       png(filename = blank, width = 1500, height = 400)
       plot(0, type = "l", xlab = "", ylab  ="", xaxt = "n", yaxt = "n")
       dev.off()
-      return(list(src = blank, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
+      #return(list(src = blank, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
+      return(list(src = blank, contentType = "image/png", width = "100%", height = "100%", alt = "CWT Transfer Function"))
     }} , deleteFile = TRUE)
   ######################################################################################################
   
