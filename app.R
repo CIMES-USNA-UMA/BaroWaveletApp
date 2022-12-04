@@ -281,7 +281,7 @@ ui <- fluidPage(
                                          sliderInput("maxEst_dwt", "Max value", min = 0, max = 200, 
                                                      value = 60, step = 0.05)
                             ),
-                            mainPanel(style = "background:white", width = 10,
+                            mainPanel(style = "background:white", width = 9,
                                       plotOutput("ExpectedVals_DWT_Plot"))
                           )
                         
