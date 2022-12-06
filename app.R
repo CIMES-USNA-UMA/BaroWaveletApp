@@ -501,10 +501,6 @@ server <- function(input, output, session) {
             framework <- AnalyzeTransferFun(framework, n)
           }
         }
-        if(length(framework$ExpectedVals) > 0){
-          framework <- PrepareIntervalSlots(framework, "dwt")
-          framework <- PrepareIntervalSlots(framework, "cwt")
-        }
         saveRDS(framework, file  = file)
       }
     )
@@ -633,8 +629,6 @@ server <- function(input, output, session) {
       updateSelectInput(session, "test_var_in_test", "Select testing variable", choices = c("No testing variable has been selected", choices))
       updateSelectInput(session, "con_var_in_test", "Select control variable", choices = c("No control variable has been selected", choices))
       updateSelectInput(session, "select_variable2", "Select variable", choices = c("No variable has been selected", choices))
-      framework <- PrepareIntervalSlots(framework, "dwt")
-      framework <- PrepareIntervalSlots(framework, "cwt")
       database$framework <- framework
     }
   })
@@ -680,10 +674,6 @@ server <- function(input, output, session) {
                                  SBP = data$SBP)
         framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
         framework <- AddAvgCwtData(framework, length(framework$Analyses))
-        if(length(framework$ExpectedVals) > 0){
-          framework <- PrepareIntervalSlots(framework, "dwt")
-          framework <- PrepareIntervalSlots(framework, "cwt")
-        }
       }
       output$data_file <- renderUI({
         fileInput("data_file", "Upload data file",
