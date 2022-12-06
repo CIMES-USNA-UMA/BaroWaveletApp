@@ -537,7 +537,6 @@ server <- function(input, output, session) {
                                      SBP = nosySim$SBP)
       framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
       framework <- AddAvgCwtData(framework, length(framework$Analyses))
-      framework <- AddCausalCoupling(framework, length(framework$Analyses))
       framework <- AddAnalysis(framework, name = "Simulation with denoised signals")
       framework <- AddDataToAnalysis(framework, length(framework$Analyses),
                                      time = denoisedSim$Time, RR = denoisedSim$RR,
@@ -549,7 +548,6 @@ server <- function(input, output, session) {
       RAW_database$RAW <- RAW
       framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
       framework <- AddAvgCwtData(framework, length(framework$Analyses))
-      framework <- AddCausalCoupling(framework, length(framework$Analyses))
       new_analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
       text_n <- paste("Number of subjects contained in this study:", framework$n, "subjects.")  
@@ -682,7 +680,6 @@ server <- function(input, output, session) {
                                  SBP = data$SBP)
         framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
         framework <- AddAvgCwtData(framework, length(framework$Analyses))
-        framework <- AddCausalCoupling(framework, length(framework$Analyses))
         if(length(framework$ExpectedVals) > 0){
           framework <- PrepareIntervalSlots(framework, "dwt")
           framework <- PrepareIntervalSlots(framework, "cwt")
