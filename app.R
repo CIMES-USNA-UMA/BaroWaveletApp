@@ -353,7 +353,8 @@ fluidRow(
            ),
            fluidRow(
            column(4, actionButton("confirm_test", "Test")),
-           column(4, checkboxInput("norm_hrv", "Normalize HRV", value = FALSE))
+           column(4, checkboxInput("norm_hrv", "Normalize HRV", value = FALSE)),
+           column(4, checkboxInput("show_paired", "Show paired interactions", value = FALSE))
            )
          )
          )
@@ -1801,7 +1802,8 @@ server <- function(input, output, session) {
       framework <- isolate(database$framework)
       tests <- ShowIndexes(framework, "tests")[2,]
       test <- match(input$select_testHRV , tests)
-      results <- PlotHRVTestResults(framework, test, newPlot = FALSE)
+      results <- PlotHRVTestResults(framework, test, newPlot = FALSE, 
+                                    draw_paired = input$show_paired)
       return(results)
     }
     
@@ -1813,7 +1815,8 @@ server <- function(input, output, session) {
       framework <- isolate(database$framework)
       tests <- ShowIndexes(framework, "tests")[2,]
       test <- match(input$select_test , tests)
-      results <- PlotTestResults(framework, test, newPlot = FALSE)
+      results <- PlotTestResults(framework, test, newPlot = FALSE, 
+                                 draw_paired = input$show_paired)
       return(results)
     }
     
