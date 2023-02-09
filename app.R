@@ -40,40 +40,55 @@ ui <- fluidPage(
       column(6,
              
              wellPanel(h2("Studdy settings"),
-                       p("Change global settings. These settings are intended to be applied to all analyses
-                         to avoid biased comparisons",
+                       p("Change global settings. These settings will be applied to every analysis.",
                          style="text-align:justify;color:black;background-color:grey80"),
                       textInput("framework_name", "Name", value = "BaroWavelet Study"),
                       tags$hr(),
-                      selectInput("wavelet", "Wavelet (for Discrete Wavelet Transform)",
-                                  choices = c("bl14", "bl20","bs3.1","d2", "d4",
-                                              "d8", "d16", "fk4", "fk6", "fk14",
-                                              "fk22", "haar", "la8" ,"la16", "la20",
-                                              "mb4", "mb8", "mb16", "mb24", "w4"
-                                              ), selected = "d4"),
-                      tags$hr(),
                       fluidRow(
-                               column(4,
-                                      numericInput("HF_val", "HF", value = 0.4, min = 0.15, step = 0.001)
-                                      ),
-                               column(4,
-                                      numericInput("LF_val", "LF", value = 0.15, min = 0.04, max = 0.15, step = 0.001)
-                                      ),
-                               column(4,
-                                      numericInput("VLF_val", "VLF", value = 0.04, min = 0, max = 0.04, step = 0.0001)
-                               )
+                        column(4,
+                               numericInput("HF_val", "HF", value = 0.4, min = 0.15, step = 0.001)
+                        ),
+                        column(4,
+                               numericInput("LF_val", "LF", value = 0.15, min = 0.04, max = 0.15, step = 0.001)
+                        ),
+                        column(4,
+                               numericInput("VLF_val", "VLF", value = 0.04, min = 0, max = 0.04, step = 0.0001)
+                        ),
                       ),
                       tags$hr(),
-                      checkboxInput("use_thr", "Use coherence threshold (for Continuous Wavelet Transform)", 
-                                    value = TRUE),
+                      fluidRow(
+                        column(4, selectInput("wavelet", "DWT wavelet",
+                                              choices = c("bl14", "bl20","bs3.1","d2", "d4",
+                                                          "d8", "d16", "fk4", "fk6", "fk14",
+                                                          "fk22", "haar", "la8" ,"la16", "la20",
+                                                          "mb4", "mb8", "mb16", "mb24", "w4"
+                                              ), selected = "d8")
+                        ), 
+                        column(4,
+                               numericInput("dwt_error", "Error (tolerance)", value = 0.0005, min = 0.0001, step = 0.001)
+                        ),
+                        column(4,
+                               selectInput("dwt_er_type", "Error type",
+                                           choices = c("Absolute", "Relative"),
+                                           selected = "Absolute")
+                        ),
+                      ),
+                      tags$hr(),
+                      fluidRow(
+                        column(6,selectInput("cwt_type", "Compute CWT:",
+                                             choices = c("Transfer Function", "Alpha Index"),
+                                             selected = "Transfer Function")
+                        ),
+                        column(6, checkboxInput("use_thr", "Use coherence threshold (for Continuous Wavelet Transform)", 
+                                                value = TRUE)
+                        ),
+                      ),
+                      tags$hr(),
+                      selectInput("index_method", "Obtain individual indices with:",
+                                           choices = c("Median", "Mean"),
+                                           selected = "Median"),
                       tags$hr(),
                       actionButton("change_main_sets", "Change Framework Settings"),
-                      tags$hr(),
-                      h3("Current settings"),
-                      h4(textOutput("text_HF")),
-                      h4(textOutput("text_LF")),
-                      h4(textOutput("text_wavelet")),
-                      h4(textOutput("text_thr"))
                
              )
       )
@@ -103,18 +118,30 @@ ui <- fluidPage(
       column(12,
              wellPanel(
                # Box to display subject info
+               fluidRow(
+                 column(6,
                h3("Study Info"),
                tags$hr(),
                h4(textOutput("text_globalname")),
                h4(textOutput("text_n")),
                h4(textOutput("text_nintervals")),
                h4(textOutput("text_ntests"))
-             ))
+                 ),
+               column(6,
+                      h3("Current settings"),
+                      tags$hr(),
+                      h4(textOutput("text_HF")),
+                      h4(textOutput("text_LF")),
+                      h4(textOutput("text_wavelet")),
+                      h4(textOutput("text_error")),
+                      h4(textOutput("text_cwt_type")),
+                      h4(textOutput("text_thr")),
+                      h4(textOutput("text_index_m"))
+             ))))
     ),
     fluidRow(
       column(12,
              wellPanel(
-               # Box to visualize results from individual analyses
                h2("Subject Analysis"),
                tags$hr(),
                fluidRow(
@@ -130,7 +157,6 @@ ui <- fluidPage(
                         ),
                h3("Recordings"),
                tags$hr(),
-               #checkboxInput("var", "Causal-filter the time segment", value = FALSE),
                wellPanel(style = "background:white",
                          plotOutput("Raw", brush = "brush_raw", dblclick = "dbc_raw")
                ),
@@ -178,14 +204,14 @@ ui <- fluidPage(
                           wellPanel(style = "background:white",
                                     fluidRow(
                                       column(6, 
-                                             plotOutput("Analyzed_TF_Plot1_cwt", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("Analyzed_brs_Plot1_cwt", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                                    resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       ),
                                       column(6,
-                                             plotOutput("Analyzed_TF_Plot2_cwt", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("Analyzed_brs_Plot2_cwt", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                                    resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       )
                                     ),
                                     fluidRow(
@@ -218,14 +244,14 @@ ui <- fluidPage(
                           wellPanel(style = "background:white",
                                     fluidRow(
                                       column(6, 
-                                             plotOutput("phase1_cwt", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("phase1_cwt", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                         resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       ),
                                       column(6,
-                                             plotOutput("phase2_cwt", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("phase2_cwt", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                         resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       )
                                     )
                           )
@@ -249,14 +275,14 @@ ui <- fluidPage(
                           wellPanel(style = "background:white",
                                     fluidRow(
                                       column(6, 
-                                             plotOutput("Analyzed_TF_Plot1", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("Analyzed_brs_Plot1", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                                resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       ),
                                       column(6,
-                                             plotOutput("Analyzed_TF_Plot2", brush = brushOpts(id = "Analyzed_TF_brush1",
+                                             plotOutput("Analyzed_brs_Plot2", brush = brushOpts(id = "Analyzed_brs_brush1",
                                                                                                resetOnNew = TRUE),
-                                                        dblclick = "Analyzed_TF_dbc1")
+                                                        dblclick = "Analyzed_brs_dbc1")
                                       )
                                     ),
                                     fluidRow(
@@ -282,7 +308,7 @@ ui <- fluidPage(
                                                      value = 60, step = 0.05)
                             ),
                             mainPanel(style = "background:white", width = 9,
-                                      plotOutput("ExpectedVals_DWT_Plot"))
+                                      plotOutput("IndividualIndices_DWT_Plot"))
                           )
                         
                  )
@@ -451,16 +477,23 @@ server <- function(input, output, session) {
   database <- reactiveValues()
   RAW_database <- reactiveValues()
   framework <- BuildStructure(name = "BaroWavelet Study")
-  #framework <- BuildStructure(name = "BaroWavelet Study", use.weight = FALSE)
   database$framework <- framework
-  RAW_database$RAW <- framework
+  #RAW_database$RAW <- framework
   text_globalname <- paste("Name of this study:", isolate(database$framework)$Name)
   text_n <- paste("Number of subjects contained in this study:", isolate(database$framework)$n, "subjects.")
-  text_nintervals <- paste("Number of intervals analyzed in this study: ", length(isolate(database$framework)$ExpectedVals), "intervals.")
+  text_nintervals <- paste("Number of intervals analyzed in this study: ", length(isolate(database$framework)$IndividualIndices), "intervals.")
   text_ntests <- paste("Number of tests performed:", length(isolate(database$framework)$Tests), "tests.")
   text_HF <- paste("HF Interval: from", framework$"General Data"$HF, "to", framework$"General Data"$LF, "Hz.")
   text_LF <- paste("LF Interval: from", framework$"General Data"$LF, "to", framework$"General Data"$VLF, "Hz.")
   text_wavelet <- paste("DWT wavelet:", framework$"General Data"$Wavelet)
+  text_error <- paste("DWT tolerance: ", framework$"General Data"$Error, " (", 
+                      framework$"General Data"$"Error Type", ")", sep = "")
+  text_cwt_type <- ifelse(framework$"General Data"$"CWT Type" == "alpha", 
+                          "CWT BRS: Alpha index",
+                          "CWT BRS: Transfer function")
+  text_index_m <- ifelse(framework$"General Data"$"Index Method" == "median", 
+                        "Individual indices obtained by: median",
+                        "Individual indices obtained by: mean")
   text_thr <- "A coherence threshold is being used to calculate the estimates."
   output$text_globalname <- renderText({text_globalname})
   output$text_n <- renderText({text_n})
@@ -470,6 +503,9 @@ server <- function(input, output, session) {
   output$text_LF <- renderText({text_LF})
   output$text_wavelet <- renderText({text_wavelet})
   output$text_thr <- renderText({text_thr})
+  output$text_error <- renderText({text_error})
+  output$text_cwt_type <- renderText({text_cwt_type})
+  output$text_index_m <- renderText({text_index_m})
   
   #########################################################################################################
   
@@ -494,14 +530,6 @@ server <- function(input, output, session) {
       },
       content = function(file){
         framework <- isolate(database$framework)
-        RAW <- isolate(RAW_database$RAW)
-        analyses <- ShowIndexes(RAW, "analyses")[2,]
-        if(length(analyses) > 0){
-          for(n in 1:length(analyses)){
-            framework$Analyses[[n]]$Data <- RAW$Analyses[[n]]$Data
-            framework <- AnalyzeTransferFun(framework, n)
-          }
-        }
         saveRDS(framework, file  = file)
       }
     )
@@ -519,31 +547,22 @@ server <- function(input, output, session) {
     framework$"General Data"$HF <- input$HF_val
     framework$"General Data"$LF <- input$LF_val
     framework$"General Data"$VLF <- input$VLF_val
+    framework$"General Data"$Error <- input$dwt_error
+    framework$"General Data"$"Error Type" <- ifelse(input$dwt_er_type == "Absolute",
+                                                    "absolute", "relative")
+    framework$"General Data"$"CWT Type" <- ifelse(input$cwt_type == "Alpha",
+                                                    "alpha", "brs")
+    framework$"General Data"$"Index Method" <- ifelse(input$index_method == "Median",
+                                                  "median", "mean")
     # Allow usage of simulation
     if(framework$Name == "Simulation"){
-      RAW <- isolate(RAW_database$RAW)
-      nosySim <- InterpolateData(DataSimulation())
-      denoisedSim <- InterpolateData(DataSimulation(use.noise = FALSE))
-      framework <- AddAnalysis(framework, name = "Simulation with noisy signals")
+      #RAW <- isolate(RAW_database$RAW)
+      Sim <- InterpolateData(DataSimulation(), f = input$int_freq)
+      framework <- AddAnalysis(framework, name = "Simulation")
       framework <- AddDataToAnalysis(framework, length(framework$Analyses),
-                                     time = nosySim$Time, RR = nosySim$RR,
-                                     SBP = nosySim$SBP)
-      RAW <- AddAnalysis(RAW, name = "Simulation with noisy signals")
-      RAW <- AddDataToAnalysis(RAW, length(RAW$Analyses),
-                                     time = nosySim$Time, RR = nosySim$RR,
-                                     SBP = nosySim$SBP)
-      framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
-      framework <- AddAvgCwtData(framework, length(framework$Analyses))
-      framework <- AddAnalysis(framework, name = "Simulation with denoised signals")
-      framework <- AddDataToAnalysis(framework, length(framework$Analyses),
-                                     time = denoisedSim$Time, RR = denoisedSim$RR,
-                                     SBP = denoisedSim$SBP)
-      RAW <- AddAnalysis(RAW, name = "Simulation with denoised signals")
-      RAW <- AddDataToAnalysis(RAW, length(RAW$Analyses),
-                               time = denoisedSim$Time, RR = denoisedSim$RR,
-                               SBP = denoisedSim$SBP)
-      RAW_database$RAW <- RAW
-      framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
+                                     time = Sim$Time, RR = Sim$RR,
+                                     SBP = Sim$SBP)
+      framework <- AnalyzeBRS(framework, length(framework$Analyses))
       framework <- AddAvgCwtData(framework, length(framework$Analyses))
       new_analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
@@ -553,14 +572,23 @@ server <- function(input, output, session) {
     text_wavelet <- paste("DWT wavelet:", framework$"General Data"$Wavelet)
     text_thr <- ifelse(framework$"General Data"$Threshold, "A coherence threshold is being used to calculate the estimates.",
                        "No coherence threshold is being used to calculate the estimates.")
-    text_weights <- ifelse(framework$"General Data"$Weight, "Results are being weighted for estimate calculations.",
-                           "Results are not being weighted for estimate calculations.")
     text_HF <- paste("HF Interval: from", framework$"General Data"$HF, "to", framework$"General Data"$LF, "Hz.")
     text_LF <- paste("LF Interval: from", framework$"General Data"$LF, "to", framework$"General Data"$VLF, "Hz.")
+    text_error <- paste("DWT tolerance: ", framework$"General Data"$Error, " (", 
+                        framework$"General Data"$"Error Type", ")", sep = "")
+    text_cwt_type <- ifelse(framework$"General Data"$"CWT Type" == "alpha", 
+                            "CWT BRS: Alpha index",
+                            "CWT BRS: Transfer function")
+    text_index_m <- ifelse(framework$"General Data"$"Index Method" == "median", 
+                           "Individual indices obtained by: median",
+                           "Individual indices obtained by: mean")
     output$text_HF <- renderText({text_HF})
     output$text_LF <- renderText({text_LF})
     output$text_wavelet <- renderText({text_wavelet})
     output$text_thr <- renderText({text_thr})
+    output$text_error <- renderText({text_error})
+    output$text_cwt_type <- renderText({text_cwt_type})
+    output$text_index_m <- renderText({text_index_m})
     database$framework <- framework
   })
   
@@ -577,15 +605,22 @@ server <- function(input, output, session) {
     })
     text_globalname <- paste("Name of this study:", framework$Name)
     text_n <- paste("Number of subjects contained in this study:", framework$n, "subjects.")
-    text_nintervals <- paste("Number of intervals analyzed in this study: ", length(framework$ExpectedVals), "intervals.")
+    text_nintervals <- paste("Number of intervals analyzed in this study: ", length(framework$IndividualIndices), "intervals.")
     text_ntests <- paste("Number of tests performed:", length(framework$Tests), "tests.")
     text_HF <- paste("HF Interval: from", framework$"General Data"$HF, "to", framework$"General Data"$LF, "Hz.")
     text_LF <- paste("LF Interval: from", framework$"General Data"$LF, "to", framework$"General Data"$VLF, "Hz.")
     text_wavelet <- paste("DWT wavelet:", framework$"General Data"$Wavelet)
     text_thr <- "A coherence threshold is being used to calculate the estimates."
-    text_weights <- "Results are being weighted for estimate calculations."
+    text_error <- paste("DWT tolerance: ", framework$"General Data"$Error, " (", 
+                        framework$"General Data"$"Error Type", ")", sep = "")
+    text_cwt_type <- ifelse(framework$"General Data"$"CWT Type" == "alpha", 
+                            "CWT BRS: Alpha index",
+                            "CWT BRS: Transfer function")
+    text_index_m <- ifelse(framework$"General Data"$"Index Method" == "median", 
+                           "Individual indices obtained by: median",
+                           "Individual indices obtained by: mean")
     if(length(framework$Analyses) > 0) new_analysis_choices <- ShowIndexes(framework, "analyses")[2,]
-    if(length(framework$ExpectedVals) > 0) new_interval_choices <- ShowIndexes(framework, "intervals")[2,]
+    if(length(framework$IndividualIndices) > 0) new_interval_choices <- ShowIndexes(framework, "intervals")[2,]
     if(length(framework$Tests) > 0) new_test_choices <- ShowIndexes(framework, "tests")[2,]
     output$text_globalname <- renderText({text_globalname})
     output$text_n <- renderText({text_n})
@@ -595,13 +630,15 @@ server <- function(input, output, session) {
     output$text_LF <- renderText({text_LF})
     output$text_wavelet <- renderText({text_wavelet})
     output$text_thr <- renderText({text_thr})
-    output$text_weights <- renderText({text_weights})
+    output$text_error <- renderText({text_error})
+    output$text_cwt_type <- renderText({text_cwt_type})
+    output$text_cwt_type <- renderText({text_cwt_type})
     if(length(framework$Analyses) > 0) updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
-    if(length(framework$ExpectedVals) > 0) updateSelectInput(session, "interval_input", "Select Interval", choices = c("No intervals have been set", new_interval_choices))
-    if(length(framework$ExpectedVals) > 0) updateSelectInput(session, "control_input", "Set Interval as Control", choices = c("No control has been set", new_interval_choices))
-    if(length(framework$ExpectedVals) > 0) updateSelectInput(session, "test_var_in_test", "Select testing variable", choices = c("No testing variable has been selected", new_interval_choices))
-    if(length(framework$ExpectedVals) > 0) updateSelectInput(session, "con_var_in_test", "Select control variable", choices = c("No control variable has been selected", new_interval_choices))
-    if(length(framework$ExpectedVals) > 0) updateSelectInput(session, "select_variable2", "Select variable", choices = c("No variable has been selected", new_interval_choices))
+    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "interval_input", "Select Interval", choices = c("No intervals have been set", new_interval_choices))
+    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "control_input", "Set Interval as Control", choices = c("No control has been set", new_interval_choices))
+    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "test_var_in_test", "Select testing variable", choices = c("No testing variable has been selected", new_interval_choices))
+    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "con_var_in_test", "Select control variable", choices = c("No control variable has been selected", new_interval_choices))
+    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "select_variable2", "Select variable", choices = c("No variable has been selected", new_interval_choices))
     if(length(framework$Tests) > 0) updateSelectInput(session, "select_test", "Select test", choices = c("No test has been selected", new_test_choices))
     if(length(framework$TestsHRV) > 0) updateSelectInput(session, "select_testHRV", "Select test", choices = c("No test has been selected", new_test_choices))
     if(length(framework$Clinical) > 0){
@@ -609,7 +646,7 @@ server <- function(input, output, session) {
       updateSelectInput(session, "select_variable3", "Select clinical variable", choices = c("No clinical variable has been selected", clinic_names))
     } 
     database$framework <- framework
-    RAW_database$RAW <- framework
+    #RAW_database$RAW <- framework
   })
   #############################################################################################################
   
@@ -622,7 +659,7 @@ server <- function(input, output, session) {
       for(n in 1:length(names)){
         framework <- AddTimeInterval(framework, name = names[n])
       }
-      text_nintervals <- paste("Number of intervals analyzed in this study: ", length(framework$ExpectedVals), "intervals.")
+      text_nintervals <- paste("Number of intervals analyzed in this study: ", length(framework$IndividualIndices), "intervals.")
       output$text_nintervals <- renderText({text_nintervals})
       choices <- ShowIndexes(framework, "intervals")[2,]
       updateSelectInput(session, "interval_input", "Select Interval", choices = c("No intervals have been set", choices))
@@ -669,11 +706,7 @@ server <- function(input, output, session) {
         framework <- AddDataToAnalysis(framework, length(framework$Analyses),
                                        time = data$Time, RR = data$RR,
                                        SBP = data$SBP)
-        RAW <- AddAnalysis(RAW, name = names[[n]])
-        RAW <- AddDataToAnalysis(RAW, length(RAW$Analyses),
-                                 time = data$Time, RR = data$RR,
-                                 SBP = data$SBP)
-        framework <- AnalyzeTransferFun(framework, length(framework$Analyses))
+        framework <- AnalyzeBRS(framework, length(framework$Analyses))
         framework <- AddAvgCwtData(framework, length(framework$Analyses))
       }
       output$data_file <- renderUI({
@@ -713,7 +746,7 @@ server <- function(input, output, session) {
                                               "text/comma-separated-values", "text/plain",
                                               ".csv", ".txt"))
       })
-      new_analysis_choices <- colnames(data)[-1]
+      new_analysis_choices <- colnames(data)
       updateSelectInput(session, "select_variable3", "Select clinical variable", choices = c("No clinical variable has been selected",
                                                                                              new_analysis_choices))
   })
@@ -763,9 +796,9 @@ server <- function(input, output, session) {
     if(input$subject_input !="No subjects have been loaded"){
       RAW <- isolate(RAW_database$RAW)
       framework <- isolate(database$framework)
-      analysis_choices <- ShowIndexes(RAW, "analyses")[2,]
+      analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      raw_data <- RAW$Analyses[[chosen_analysis]]$Data
+      raw_data <- framework$Analyses[[chosen_analysis]]$Data
       raw_data[,"RR"] <- 60000/raw_data[,"RR"]
       result <- ggplot2::ggplot(data = data.frame(raw_data), ggplot2::aes(Time)) +
         ggplot2::geom_line(ggplot2::aes(y = RR, colour = "HR")) + 
@@ -784,22 +817,22 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             result <- result + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             result <- result + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -822,22 +855,22 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -862,22 +895,22 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -902,22 +935,22 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -933,32 +966,32 @@ server <- function(input, output, session) {
   
 
   ####################### 10.5.DWT ALPHA INDEX HF BAND #############################################################
-  output$Analyzed_TF_Plot1 <- renderPlot({
+  output$Analyzed_brs_Plot1 <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
     analysis_choices <- ShowIndexes(framework, "analyses")[2,]
     chosen_analysis <- match(input$subject_input, analysis_choices)
-    Results <- PlotAnalyzedTF(framework, chosen_analysis, "dwt", newPlot = FALSE, plotLF = FALSE)
+    Results <- PlotAnalyzedBRS(framework, chosen_analysis, "dwt", newPlot = FALSE, plotLF = FALSE)
     if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
       if(input$interval_input != "No intervals have been set"){
         intervals <- ShowIndexes(framework, "intervals")[2,]
         interval <- match(input$interval_input, intervals)
-        if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+        if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
           Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                  alpha = 0.5, xmin = 
-                                                   framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                 xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                   framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                 xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                  ymin = -Inf, ymax = Inf)
         }
       }
       if(input$control_input != "No control has been set"){
         intervals <- ShowIndexes(framework, "intervals")[2,]
         interval <- match(input$control_input, intervals)
-        if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+        if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
           Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                  alpha = 0.5, xmin = 
-                                                   framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                 xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                   framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                 xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                  ymin = -Inf, ymax = Inf)
         }
       }
@@ -973,34 +1006,34 @@ server <- function(input, output, session) {
   
   
   
-  ########### 10.6. CWT TF PHASE PLOT HF BAND #################################################################
+  ########### 10.6. CWT BRS PHASE PLOT HF BAND #################################################################
   output$phase1_cwt <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, chosen_analysis, "cwt.phase", newPlot = FALSE, plotLF = FALSE, thr = input$coherence_val)
+      Results <- PlotAnalyzedBRS(framework, chosen_analysis, "cwt.phase", newPlot = FALSE, plotLF = FALSE, thr = input$coherence_val)
       Results <- Results + ggplot2::ylim(-pi, pi)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -1015,32 +1048,32 @@ server <- function(input, output, session) {
   
   
   ############# 10.7. DWT ALPHA INDEX LF BAND #######################################################
-  output$Analyzed_TF_Plot2 <- renderPlot({
+  output$Analyzed_brs_Plot2 <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, chosen_analysis, "dwt", newPlot = FALSE, plotHF = FALSE)
+      Results <- PlotAnalyzedBRS(framework, chosen_analysis, "dwt", newPlot = FALSE, plotHF = FALSE)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -1056,32 +1089,32 @@ server <- function(input, output, session) {
   
   
   ############# 10.8. CWT SCALE-AVERAGED GAIN TRANSFER FUNCTION HF BAND ##############################
-  output$Analyzed_TF_Plot1_cwt <- renderPlot({
+  output$Analyzed_brs_Plot1_cwt <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, chosen_analysis, "cwt.avg", newPlot = FALSE, plotLF = FALSE, thr = input$coherence_val)
+      Results <- PlotAnalyzedBRS(framework, chosen_analysis, "cwt.avg", newPlot = FALSE, plotLF = FALSE, thr = input$coherence_val)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -1096,32 +1129,32 @@ server <- function(input, output, session) {
   
   
   ############# 10.9. CWT SCALE-AVERAGED GAIN TRANSFER FUNCTION LF BAND ##############################
-  output$Analyzed_TF_Plot2_cwt <- renderPlot({
+  output$Analyzed_brs_Plot2_cwt <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, chosen_analysis, "cwt.avg", newPlot = FALSE, plotHF = FALSE, thr = input$coherence_val)
+      Results <- PlotAnalyzedBRS(framework, chosen_analysis, "cwt.avg", newPlot = FALSE, plotHF = FALSE, thr = input$coherence_val)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -1134,34 +1167,34 @@ server <- function(input, output, session) {
   })
   ##########################################################################################################
   
-  ########### 10.10. CWT TF PHASE PLOT HF BAND #################################################################
+  ########### 10.10. CWT BRS PHASE PLOT HF BAND #################################################################
   output$phase2_cwt <- renderPlot({
     if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, chosen_analysis, "cwt.phase", newPlot = FALSE, plotHF = FALSE, thr = input$coherence_val)
+      Results <- PlotAnalyzedBRS(framework, chosen_analysis, "cwt.phase", newPlot = FALSE, plotHF = FALSE, thr = input$coherence_val)
       Results <- Results + ggplot2::ylim(-pi, pi)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
         if(input$control_input != "No control has been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis])){
+          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
-                                                     framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]*60,
-                                                   xmax = framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis]*60,
+                                                     framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
+                                                   xmax = framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis]*60,
                                                    ymin = -Inf, ymax = Inf)
           }
         }
@@ -1177,14 +1210,14 @@ server <- function(input, output, session) {
 
 
   
-  ################# 10.11. CWT TRANSFER FUNCTION ########################################################
+  ################# 10.11. CWT TIME-FREQUENCY ########################################################
   
   output$CWT_plot <- renderImage(
     { if(input$subject_input !="No subjects have been loaded"){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedTF(framework, index = chosen_analysis, method = "cwt", tem = TRUE, newPlot = FALSE,
+      Results <- PlotAnalyzedBRS(framework, locator = chosen_analysis, method = "cwt", tem = TRUE, newPlot = FALSE,
                                 thr = input$coherence_val)
       #return(list(src = Results, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
       return(list(src = Results, contentType = "image/png", width = "100%", height = "100%", alt = "CWT Transfer Function"))
@@ -1193,7 +1226,6 @@ server <- function(input, output, session) {
       png(filename = blank, width = 1500, height = 400)
       plot(0, type = "l", xlab = "", ylab  ="", xaxt = "n", yaxt = "n")
       dev.off()
-      #return(list(src = blank, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
       return(list(src = blank, contentType = "image/png", width = "100%", height = "100%", alt = "CWT Transfer Function"))
     }} , deleteFile = TRUE)
   ######################################################################################################
@@ -1205,75 +1237,75 @@ server <- function(input, output, session) {
   ####################### 11. ESTIMATE TEXTS ######################################################
   
   output$DWT_Estimate_HF<- renderText({
-    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_TF_brush1)){
+    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_brs_brush1)){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Analysis <- framework$Analyses[[chosen_analysis]]
-      tf <- Analysis$BRS$DWT
-      tf$Time <- Analysis$Data[,1]
-      tf$type <- "TFun_dwt"
-      EVals <- ExpectedValues(tf, c(input$Analyzed_TF_brush1$xmin / 60, input$Analyzed_TF_brush1$xmax / 60),
-                              weight = Data$Weight, use.coherence = Data$Threshold,
-                              thr = Data$Coherence)
-      paste("Estimate at HF band between", round(ifelse(input$Analyzed_TF_brush1$xmin > 0,  input$Analyzed_TF_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_TF_brush1$xmax / 60, 3), "min:", round(EVals[1],3), "ms/mmHg")
+      brs <- Analysis$BRS$DWT
+      brs$Time <- Analysis$Data[,1]
+      brs$type <- "brs_dwt"
+      indices <- IndividualIndices(brs, c(input$Analyzed_brs_brush1$xmin / 60, input$Analyzed_brs_brush1$xmax / 60),
+                              use.coherence = Data$Threshold,
+                              thr = Data$Coherence, method = Data$"Index Method")
+      paste("Estimate at HF band between", round(ifelse(input$Analyzed_brs_brush1$xmin > 0,  input$Analyzed_brs_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_brs_brush1$xmax / 60, 3), "min:", round(indices[1,1],3), "ms/mmHg")
     }
     })
   
   output$CWT_Estimate_HF<- renderText({
-    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_TF_brush1)){
+    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_brs_brush1)){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Analysis <- framework$Analyses[[chosen_analysis]]
-      tf <- AssembleCwtTransferFun(framework, chosen_analysis)
-      tf <- SplitByCoherence(tf, thr = input$coherence_val, phase.rest = NULL)
-      tf$Time <- Analysis$Data[,1]
-      tf$type <- "TFun_dwt"
-      EVals <- ExpectedValues(tf, c(input$Analyzed_TF_brush1$xmin / 60, input$Analyzed_TF_brush1$xmax / 60),
-                              weight = Data$Weight, use.coherence = Data$Threshold,
-                              thr = Data$Coherence)
-      paste("Estimate at HF band between", round(ifelse(input$Analyzed_TF_brush1$xmin > 0,  input$Analyzed_TF_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_TF_brush1$xmax / 60, 3), "min:", round(EVals[1],3), "ms/mmHg")
+      brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+      brs <- SplitByCoherence(brs, thr = input$coherence_val)
+      brs$Time <- Analysis$Data[,1]
+      brs$type <- "brs_dwt"
+      indices <- IndividualIndices(brs, c(input$Analyzed_brs_brush1$xmin / 60, input$Analyzed_brs_brush1$xmax / 60),
+                              use.coherence = Data$Threshold,
+                              thr = Data$Coherence, method = Data$"Index Method")
+      paste("Estimate at HF band between", round(ifelse(input$Analyzed_brs_brush1$xmin > 0,  input$Analyzed_brs_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_brs_brush1$xmax / 60, 3), "min:", round(indices[1,1],3), "ms/mmHg")
     }
   })
   
   output$DWT_Estimate_LF<- renderText({
-    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_TF_brush1)){
+    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_brs_brush1)){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Analysis <- framework$Analyses[[chosen_analysis]]
-      tf <- Analysis$BRS$DWT
-      tf$Time <- Analysis$Data[,1]
-      tf$type <- "TFun_dwt"
-      EVals <- ExpectedValues(tf, c(input$Analyzed_TF_brush1$xmin / 60, input$Analyzed_TF_brush1$xmax / 60),
-                              weight = Data$Weight, use.coherence = Data$Threshold,
+      brs <- Analysis$BRS$DWT
+      brs$Time <- Analysis$Data[,1]
+      brs$type <- "brs_dwt"
+      indices <- IndividualIndices(brs, c(input$Analyzed_brs_brush1$xmin / 60, input$Analyzed_brs_brush1$xmax / 60),
+                              use.coherence = Data$Threshold,
                               thr = Data$Coherence)
-      paste("Estimate at LF band between", round(ifelse(input$Analyzed_TF_brush1$xmin > 0,  input$Analyzed_TF_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_TF_brush1$xmax / 60, 3), "min:", round(EVals[2],3), "ms/mmHg")
+      paste("Estimate at LF band between", round(ifelse(input$Analyzed_brs_brush1$xmin > 0,  input$Analyzed_brs_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_brs_brush1$xmax / 60, 3), "min:", round(indices[1,2],3), "ms/mmHg")
     }
     })
   
   output$CWT_Estimate_LF<- renderText({
-    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_TF_brush1)){
+    if(input$subject_input !="No subjects have been loaded" & !is.null(input$Analyzed_brs_brush1)){
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Analysis <- framework$Analyses[[chosen_analysis]]
-      tf <- Analysis$BRS$AvgCWT
-      tf$Time <- Analysis$Data[,1]
-      tf$type <- "TFun_dwt"
-      tf <- AssembleCwtTransferFun(framework, chosen_analysis)
-      tf <- SplitByCoherence(tf, thr = input$coherence_val, phase.rest = NULL)
-      tf$Time <- Analysis$Data[,1]
-      tf$type <- "TFun_dwt"
-      EVals <- ExpectedValues(tf, c(input$Analyzed_TF_brush1$xmin / 60, input$Analyzed_TF_brush1$xmax / 60),
-                              weight = FALSE, use.coherence = Data$Threshold,
-                              thr = Data$Coherence)
-      paste("Estimate at LF band between", round(ifelse(input$Analyzed_TF_brush1$xmin > 0,  input$Analyzed_TF_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_TF_brush1$xmax / 60, 3), "min:", round(EVals[2],3), "ms/mmHg")
+      brs <- Analysis$BRS$AvgCWT
+      brs$Time <- Analysis$Data[,1]
+      brs$type <- "brs_dwt"
+      brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+      brs <- SplitByCoherence(brs, thr = input$coherence_val)
+      brs$Time <- Analysis$Data[,1]
+      brs$type <- "brs_dwt"
+      indices <- IndividualIndices(brs, c(input$Analyzed_brs_brush1$xmin / 60, input$Analyzed_brs_brush1$xmax / 60),
+                              use.coherence = Data$Threshold,
+                              thr = Data$Coherence, method = Data$"Index Method")
+      paste("Estimate at LF band between", round(ifelse(input$Analyzed_brs_brush1$xmin > 0,  input$Analyzed_brs_brush1$xmin/ 60, 0), 3), "and", round(input$Analyzed_brs_brush1$xmax / 60, 3), "min:", round(indices[1,2],3), "ms/mmHg")
     }
   })
   
@@ -1287,11 +1319,11 @@ server <- function(input, output, session) {
       Analysis <- framework$Analyses[[chosen_analysis]]
       hrv <- Analysis$HRV
       hrv$Time <- Analysis$Data[,1]
-      hrv$type <- "TFun_dwt"
-      EVals <- ExpectedValues(hrv, c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
-                              weight = Data$Weight, use.coherence = Data$Threshold,
-                              thr = Data$Coherence)
-      paste("Estimate at HF band between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(EVals[1],3), "ms2")
+      hrv$type <- "brs_dwt"
+      indices <- IndividualIndices(hrv, c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
+                              use.coherence = Data$Threshold,
+                              thr = Data$Coherence, method = Data$"Index Method")
+      paste("Estimate at HF band between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(indices[1],3), "ms2")
     }
   })
   
@@ -1304,11 +1336,11 @@ server <- function(input, output, session) {
       Analysis <- framework$Analyses[[chosen_analysis]]
       hrv <- Analysis$HRV
       hrv$Time <- Analysis$Data[,1]
-      hrv$type <- "TFun_dwt"
-      EVals <- ExpectedValues(hrv, c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
-                              weight = Data$Weight, use.coherence = Data$Threshold,
+      hrv$type <- "brs_dwt"
+      indices <- IndividualIndices(hrv, c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
+                              use.coherence = Data$Threshold,
                               thr = Data$Coherence)
-      paste("Estimate at LF band between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(EVals[2],3), "ms2")
+      paste("Estimate at LF band between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(indices[2],3), "ms2")
     }
   })
   
@@ -1320,13 +1352,15 @@ server <- function(input, output, session) {
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-      raw <- RAW$Analyses[[chosen_analysis]]$Data
+      raw <- framework$Analyses[[chosen_analysis]]$Data
       fun <- list(Time = raw[,"Time"], HR = 60000/raw[,"RR"], SBP = raw[,"SBP"])
       select_time <- fun$Time[(fun$Time >= input$brush_raw$xmin) &
                                  (fun$Time <= input$brush_raw$xmax )]
       select_time <- match(select_time, fun$Time)
-      HR <- mean(fun$HR[select_time])
-      paste("Mean HR between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(HR,3), "bpm")
+      method <- Data$"Index Method"
+      method <- ifelse(method == "mean", mean, median)
+      HR <- method(fun$HR[select_time])
+      paste("HR between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(HR,3), "bpm")
     }
   })
   
@@ -1338,13 +1372,15 @@ server <- function(input, output, session) {
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-      raw <- RAW$Analyses[[chosen_analysis]]$Data
+      raw <- framework$Analyses[[chosen_analysis]]$Data
       fun <- list(Time = raw[,"Time"], HR = 60000/raw[,"RR"], SBP = raw[,"SBP"])
       select_time <- fun$Time[(fun$Time >= input$brush_raw$xmin ) &
                                 (fun$Time <= input$brush_raw$xmax)]
       select_time <- match(select_time, fun$Time)
-      SBP <- mean(fun$SBP[select_time])
-      paste("Mean SBP between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(SBP,3), "mmHg")
+      method <- Data$"Index Method"
+      method <- ifelse(method == "mean", mean, median)
+      SBP <- method(fun$SBP[select_time])
+      paste("SBP between", round(ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin/ 60, 0), 3), "and", round(input$brush_raw$xmax / 60, 3), "min:", round(SBP,3), "mmHg")
     }
   })
   
@@ -1362,30 +1398,30 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        tf <- framework$Analyses[[chosen_analysis]]$BRS$DWT
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,1] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,1] <= 0.001){
+        brs <- framework$Analyses[[chosen_analysis]]$BRS$DWT
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+        if(evaluation[1] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,1] <= 0.01){ 
+        } else if(evaluation[1] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,1] <= 0.05){ 
+        } else if(evaluation[1] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,1], " ms/mmHg (SE ", evaluation[3,1], " ms/mmHg), with a p value of ", 
-                      evaluation[2,1], " (", code, ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[1], 4), " (", code, ")", sep = "")
         return(text)
       }
       
@@ -1401,35 +1437,34 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        tf <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        tf <- AssembleCwtTransferFun(framework, chosen_analysis)
-        tf <- SplitByCoherence(tf, thr = input$coherence_val, phase.rest = NULL)
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        #evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = FALSE)
-        sig <- ifelse(evaluation[2,1] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,1] <= 0.001){
+        brs <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs <- SplitByCoherence(brs, thr = input$coherence_val)
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+        if(evaluation[1] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,1] <= 0.01){ 
+        } else if(evaluation[1] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,1] <= 0.05){ 
+        } else if(evaluation[1] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,1], " ms/mmHg (SE ", evaluation[3,1], " ms/mmHg), with a p value of ", 
-                      evaluation[2,1], " (", code, ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[1], 4), " (", code, ")", sep = "")
         return(text)
       }
       
@@ -1445,30 +1480,30 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        tf <- framework$Analyses[[chosen_analysis]]$BRS$DWT
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,2] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,2] <= 0.001){
+        brs <- framework$Analyses[[chosen_analysis]]$BRS$DWT
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+        if(evaluation[2] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,2] <= 0.01){ 
+        } else if(evaluation[2] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,2] <= 0.05){ 
+        } else if(evaluation[2] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,2], " ms/mmHg (SE ", evaluation[3,2], " ms/mmHg), with a p value of ", 
-                      evaluation[2,2], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[2],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1484,37 +1519,36 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        tf <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        tf <- AssembleCwtTransferFun(framework, chosen_analysis)
-        tf$type <- "TFun_cwt"
-        tf <- AssembleCwtTransferFun(framework, chosen_analysis)
-        tf <- SplitByCoherence(tf, thr = input$coherence_val, phase.rest = NULL)
-        tf$Time <- Data$Data[,1]
-        tf$type <- "TFun_dwt"
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        #evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        evaluation <- TestIndBRS(tf, time_flags1, time_flags2, weight = FALSE)
-        sig <- ifelse(evaluation[2,2] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,2] <= 0.001){
+        brs <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs$type <- "brs_cwt"
+        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs <- SplitByCoherence(brs, thr = input$coherence_val)
+        brs$Time <- Data$Data[,1]
+        brs$type <- "brs_dwt"
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+        if(evaluation[2] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,2] <= 0.01){ 
+        } else if(evaluation[2] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,2] <= 0.05){ 
+        } else if(evaluation[2] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,2], " ms/mmHg (SE ", evaluation[3,2], " ms/mmHg), with a p value of ", 
-                      evaluation[2,2], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[2],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1530,29 +1564,29 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
         hrv <- framework$Analyses[[chosen_analysis]]$HRV
         hrv$Time <- Data$Data[,1]
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,2] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,2] <= 0.001){
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+        if(evaluation[2] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,2] <= 0.01){ 
+        } else if(evaluation[2] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,2] <= 0.05){ 
+        } else if(evaluation[2] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,2], " ms2 (SE ", evaluation[3,2], " ms2), with a p value of ", 
-                      evaluation[2,2], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[2],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1568,29 +1602,29 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
         hrv <- framework$Analyses[[chosen_analysis]]$HRV
         hrv$Time <- Data$Data[,1]
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,1] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,1] <= 0.001){
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+        if(evaluation[1] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,1] <= 0.01){ 
+        } else if(evaluation[1] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,1] <= 0.05){ 
+        } else if(evaluation[1] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,1], " ms2 (SE ", evaluation[3,1], " ms2), with a p value of ", 
-                      evaluation[2,1], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[1],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1606,29 +1640,29 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
         hrv <- framework$Analyses[[chosen_analysis]]$HRV
         hrv$Time <- Data$Data[,1]
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,3] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,3] <= 0.001){
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[3] <= 0.05, "Significant", "No significant")
+        if(evaluation[3] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,3] <= 0.01){ 
+        } else if(evaluation[3] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,3] <= 0.05){ 
+        } else if(evaluation[3] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste(sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,3], " (SE ", evaluation[3,3], " ), with a p value of ", 
-                      evaluation[2,3], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[3],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1645,28 +1679,28 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        raw_data <- RAW$Analyses[[chosen_analysis]]$Data
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndRaw(raw_data, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,1] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,1] <= 0.001){
+        raw_data <- framework$Analyses[[chosen_analysis]]$Data
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndHRandBP(raw_data, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+        if(evaluation[1] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,1] <= 0.01){ 
+        } else if(evaluation[1] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,1] <= 0.05){ 
+        } else if(evaluation[1] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste("HR: ", sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,1], " bpm (SE ", evaluation[3,1], " bpm), with a p value of ", 
-                      evaluation[2,1], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[1],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1683,28 +1717,28 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       control <- match(input$control_input, intervals)
-      if(!is.na(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis]) &
-         !is.na(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis])){
+      if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
+         !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        raw_data <- RAW$Analyses[[chosen_analysis]]$Data
-        time_flags1 <- c(framework$ExpectedVals[[interval]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[interval]]$Time_DWT[2,chosen_analysis])
-        time_flags2 <- c(framework$ExpectedVals[[control]]$Time_DWT[1,chosen_analysis],
-                         framework$ExpectedVals[[control]]$Time_DWT[2,chosen_analysis])
-        evaluation <- TestIndRaw(raw_data, time_flags1, time_flags2, weight = framework$`General Data`$Weight)
-        sig <- ifelse(evaluation[2,2] <= 0.05, "Significant", "No significant")
-        if(evaluation[2,2] <= 0.001){
+        raw_data <- framework$Analyses[[chosen_analysis]]$Data
+        time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
+        time_flags2 <- c(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis],
+                         framework$IndividualIndices[[control]]$Time_DWT[2,chosen_analysis])
+        evaluation <- TestIndHRandBP(raw_data, time_flags1, time_flags2)
+        sig <- ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+        if(evaluation[2] <= 0.001){
           code <- "***"
-        } else if(evaluation[2,2] <= 0.01){ 
+        } else if(evaluation[2] <= 0.01){ 
           code <- "**"
-        } else if(evaluation[2,2] <= 0.05){ 
+        } else if(evaluation[2] <= 0.05){ 
           code <- "*"
         } else { 
           code <- "ns"
         }  
         text <- paste("SBP: ", sig, " difference in estimates between interval ", input$control_input, " (set as control) and
-                      interval ", input$interval_input, ": ", evaluation[1,2], " mmHg (SE ", evaluation[3,2], " mmHg), with a p value of ", 
-                      evaluation[2,2], " (", code , ")", sep = "")
+                      interval ", input$interval_input, ", with a p value of ", 
+                      round(evaluation[2],4), " (", code , ")", sep = "")
         return(text)
       }
       
@@ -1725,7 +1759,7 @@ server <- function(input, output, session) {
       intervals <- ShowIndexes(framework, "intervals")[2,]
       analysis <- match(input$subject_input, analyses)
       interval <- match(input$interval_input, intervals)
-      framework <- GetExpectedValues(framework, analysis, interval, 
+      framework <- AnalyzeBRSIndices(framework, analysis, interval, 
                                        c(input$brush_raw$xmin / 60, 
                                          input$brush_raw$xmax / 60))
       
@@ -1734,24 +1768,24 @@ server <- function(input, output, session) {
       
 ################### 14. PLOT ESTIMATES ########################################################################
       
-    output$ExpectedVals_DWT_Plot <- renderPlot({
+    output$IndividualIndices_DWT_Plot <- renderPlot({
         framework <- isolate(database$framework)
         analyses <- ShowIndexes(framework, "analyses")[2,]
         analysis <- match(input$subject_input, analyses)
         restrict <- NULL
-        for(n in 1:length(framework$ExpectedVals)){
-            if(length(framework$ExpectedVals[[n]]$DWT) != 0 && 
-               !is.na(framework$ExpectedVals[[n]]$DWT[1,analysis])) restrict <- c(restrict, n)
+        for(n in 1:length(framework$IndividualIndices)){
+            if(length(framework$IndividualIndices[[n]]$DWT) != 0 && 
+               !is.na(framework$IndividualIndices[[n]]$DWT[1,analysis])) restrict <- c(restrict, n)
         }
         if(!is.null(restrict)){
-           PlotIndexesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
+           PlotIndicesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
                                     restrict = restrict, ymax = input$maxEst_dwt) 
         }
     })
     }
   })
   
-  output$ExpectedVals_DWT_Plot <- renderPlot({
+  output$IndividualIndices_DWT_Plot <- renderPlot({
     check_subject <- input$subject_input !="No subjects have been loaded"
     check_interval <- input$interval_input != "No intervals have been set"
     if(check_subject & check_interval){
@@ -1759,12 +1793,12 @@ server <- function(input, output, session) {
     analyses <- ShowIndexes(framework, "analyses")[2,]
     analysis <- match(input$subject_input, analyses)
     restrict <- NULL
-    for(n in 1:length(framework$ExpectedVals)){
-      if(length(framework$ExpectedVals[[n]]$DWT) != 0 && 
-         !is.na(framework$ExpectedVals[[n]]$DWT[1,analysis])) restrict <- c(restrict, n)
+    for(n in 1:length(framework$IndividualIndices)){
+      if(length(framework$IndividualIndices[[n]]$DWT) != 0 && 
+         !is.na(framework$IndividualIndices[[n]]$DWT[1,analysis])) restrict <- c(restrict, n)
     }
     if(!is.null(restrict)){
-      PlotIndexesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
+      PlotIndicesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
                               restrict = restrict, ymax = input$maxEst_dwt) 
     }
     }
@@ -1828,7 +1862,7 @@ server <- function(input, output, session) {
   
   session$onSessionEnded(function(){
     stopApp()
-    if(.Platform$GUI != "RStudio") q(save = "no")
+    if(.Plabrsorm$GUI != "RStudio") q(save = "no")
   }) 
 #############################################################################################
   
