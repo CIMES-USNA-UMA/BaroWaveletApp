@@ -9,14 +9,14 @@ Marc Stefan Dawid Milner.
 
 ## How to access the app
 
-To use this shiny app, you will need to install first packages *shiny*, *ggplot2*, *ggpubr* and *BaroWavelet*.
-Then, you can use the app with the following code line in R:
+To use this shiny app, first you will need to install packages *shiny*, *ggplot2*, *ggpubr* and *BaroWavelet*.
+Then, you can access the app with the following code line in R:
 
 ```ruby
 shiny::runGitHub("BaroWaveletApp", "CIMES-USNA-UMA", launch.browser = TRUE)
 ```
 
-Alternatively, you can access the app through the BaroWavelet package:
+Alternatively, you can also access the app directly through the BaroWavelet package:
 
 ```ruby
 BaroWavelet::RunBaroWaveletApp()
