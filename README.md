@@ -2,12 +2,25 @@
 
 ## Description
 
-Developed (in development) by Alvaro Chao-Ecija (intern student at the 
+Shiny app developed by Alvaro Chao-Ecija (intern student at the 
 Department of Physiology and the Autonomic Nervous System Unit at CIMES, University of
 Malaga), constituting part of my Final Degree Project, under the supervision of MD-Phd. 
 Marc Stefan Dawid Milner.
 
-SHINY APPLICATION CURRENTLY UNDER DEVELOPMENT AND TESTING
+## How to access the app
+
+To use this shiny app, you will need to install first packages *shiny*, *ggplot2*, *ggpubr* and *BaroWavelet*.
+Then, you can use the app with the following code line in R:
+
+```ruby
+shiny::runGitHub("BaroWaveletApp", "CIMES-USNA-UMA", launch.browser = TRUE)
+```
+
+Alternatively, you can access the app through the BaroWavelet package:
+
+```ruby
+BaroWavelet::RunBaroWaveletApp()
+```
 
 ## Issues and requests
 
