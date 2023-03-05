@@ -1260,7 +1260,7 @@ server <- function(input, output, session) {
       chosen_analysis <- match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
       Analysis <- framework$Analyses[[chosen_analysis]]
-      brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+      brs <- AssembleCwtBRS(framework, chosen_analysis)
       brs <- SplitByCoherence(brs, thr = input$coherence_val)
       brs$Time <- Analysis$Data[,1]
       brs$type <- "brs_dwt"
@@ -1298,7 +1298,7 @@ server <- function(input, output, session) {
       brs <- Analysis$BRS$AvgCWT
       brs$Time <- Analysis$Data[,1]
       brs$type <- "brs_dwt"
-      brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+      brs <- AssembleCwtBRS(framework, chosen_analysis)
       brs <- SplitByCoherence(brs, thr = input$coherence_val)
       brs$Time <- Analysis$Data[,1]
       brs$type <- "brs_dwt"
@@ -1443,7 +1443,7 @@ server <- function(input, output, session) {
         brs <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
         brs$Time <- Data$Data[,1]
         brs$type <- "brs_dwt"
-        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs <- AssembleCwtBRS(framework, chosen_analysis)
         brs <- SplitByCoherence(brs, thr = input$coherence_val)
         brs$Time <- Data$Data[,1]
         brs$type <- "brs_dwt"
@@ -1525,9 +1525,9 @@ server <- function(input, output, session) {
         brs <- framework$Analyses[[chosen_analysis]]$BRS$AvgCWT
         brs$Time <- Data$Data[,1]
         brs$type <- "brs_dwt"
-        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs <- AssembleCwtBRS(framework, chosen_analysis)
         brs$type <- "brs_cwt"
-        brs <- AssembleCwtTransferFun(framework, chosen_analysis)
+        brs <- AssembleCwtBRS(framework, chosen_analysis)
         brs <- SplitByCoherence(brs, thr = input$coherence_val)
         brs$Time <- Data$Data[,1]
         brs$type <- "brs_dwt"
