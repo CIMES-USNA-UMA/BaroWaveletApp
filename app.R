@@ -850,7 +850,7 @@ server <- function(input, output, session) {
       framework <- isolate(database$framework)
       analysis_choices <- ShowIndexes(framework, "analyses")[2,]
       chosen_analysis <- match(input$subject_input, analysis_choices)
-      Results <- PlotAnalyzedHRV(framework, chosen_analysis, plotLF = TRUE, plotHF = TRUE, newPlot = FALSE)
+      Results <- PlotAnalyzedHRV(framework, chosen_analysis, plotLF = TRUE, plotHF = TRUE, ratio = TRUE, newPlot = FALSE)
       if(input$interval_input != "No intervals have been set" | input$control_input != "No control has been set"){
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowIndexes(framework, "intervals")[2,]
