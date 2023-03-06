@@ -39,7 +39,7 @@ ui <- fluidPage(
       ),
       column(6,
              
-             wellPanel(h2("Studdy settings"),
+             wellPanel(h2("Study settings"),
                        p("Change global settings. These settings will be applied to every analysis.",
                          style="text-align:justify;color:black;background-color:grey80"),
                       textInput("framework_name", "Name", value = "BaroWavelet Study"),
