@@ -1606,7 +1606,8 @@ server <- function(input, output, session) {
       if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
          !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        hrv <- framework$Analyses[[chosen_analysis]]$HRV
+        hrv <- list()
+        hrv$HRV <- framework$Analyses[[chosen_analysis]]$HRV
         hrv$Time <- Data$Data[,1]
         time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
                          framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
@@ -1644,7 +1645,8 @@ server <- function(input, output, session) {
       if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]) &
          !is.na(framework$IndividualIndices[[control]]$Time_DWT[1,chosen_analysis])){
         Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-        hrv <- framework$Analyses[[chosen_analysis]]$HRV
+        hrv <- list()
+        hrv$HRV <- framework$Analyses[[chosen_analysis]]$HRV
         hrv$Time <- Data$Data[,1]
         time_flags1 <- c(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis],
                          framework$IndividualIndices[[interval]]$Time_DWT[2,chosen_analysis])
