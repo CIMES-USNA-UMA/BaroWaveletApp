@@ -416,6 +416,7 @@ fluidRow(
   column(12,
          wellPanel(
              uiOutput("clinic_file"),
+             downloadButton("C_template", "Download Table Template"),
              actionButton("load_clin", "Load Clinical Data"),
            br(),
            br(),
@@ -619,9 +620,10 @@ server <- function(input, output, session) {
     text_index_m <- ifelse(framework$"General Data"$"Index Method" == "median", 
                            "Individual indices obtained by: median",
                            "Individual indices obtained by: mean")
-    if(length(framework$Analyses) > 0) new_analysis_choices <- ShowLocatorIndices(framework, "analyses")[2,]
-    if(length(framework$IndividualIndices) > 0) new_interval_choices <- ShowLocatorIndices(framework, "intervals")[2,]
-    if(length(framework$Tests) > 0) new_test_choices <- ShowLocatorIndices(framework, "tests")[2,]
+    new_analysis_choices <- new_interval_choices <- new_test_choices <- NULL
+    new_analysis_choices <- ShowLocatorIndices(framework, "analyses")[2,]
+    new_interval_choices <- ShowLocatorIndices(framework, "intervals")[2,]
+    new_test_choices <- ShowLocatorIndices(framework, "tests")[2,]
     output$text_globalname <- renderText({text_globalname})
     output$text_n <- renderText({text_n})
     output$text_nintervals <- renderText({text_nintervals})
@@ -633,14 +635,14 @@ server <- function(input, output, session) {
     output$text_error <- renderText({text_error})
     output$text_cwt_type <- renderText({text_cwt_type})
     output$text_cwt_type <- renderText({text_cwt_type})
-    if(length(framework$Analyses) > 0) updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
-    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "interval_input", "Select Interval", choices = c("No intervals have been set", new_interval_choices))
-    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "control_input", "Set Interval as Control", choices = c("No control has been set", new_interval_choices))
-    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "test_var_in_test", "Select testing variable", choices = c("No testing variable has been selected", new_interval_choices))
-    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "con_var_in_test", "Select control variable", choices = c("No control variable has been selected", new_interval_choices))
-    if(length(framework$IndividualIndices) > 0) updateSelectInput(session, "select_variable2", "Select variable", choices = c("No variable has been selected", new_interval_choices))
-    if(length(framework$Tests) > 0) updateSelectInput(session, "select_test", "Select test", choices = c("No test has been selected", new_test_choices))
-    if(length(framework$TestsHRV) > 0) updateSelectInput(session, "select_testHRV", "Select test", choices = c("No test has been selected", new_test_choices))
+    updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
+    updateSelectInput(session, "interval_input", "Select Interval", choices = c("No intervals have been set", new_interval_choices))
+    updateSelectInput(session, "control_input", "Set Interval as Control", choices = c("No control has been set", new_interval_choices))
+    updateSelectInput(session, "test_var_in_test", "Select testing variable", choices = c("No testing variable has been selected", new_interval_choices))
+    updateSelectInput(session, "con_var_in_test", "Select control variable", choices = c("No control variable has been selected", new_interval_choices))
+    updateSelectInput(session, "select_variable2", "Select variable", choices = c("No variable has been selected", new_interval_choices))
+    updateSelectInput(session, "select_test", "Select test", choices = c("No test has been selected", new_test_choices))
+    updateSelectInput(session, "select_testHRV", "Select test", choices = c("No test has been selected", new_test_choices))
     if(length(framework$Clinical) > 0){
       clinic_names <- names(framework$Clinical[1,])[-1]
       updateSelectInput(session, "select_variable3", "Select clinical variable", choices = c("No clinical variable has been selected", clinic_names))
@@ -726,17 +728,17 @@ server <- function(input, output, session) {
     })
   #############################################################################################################
   
-  ################### 9. Load Clinical Data ###################################################################
+  ################### 9. Load and Model Clinical Data ###################################################################
   
   observeEvent(input$load_clin, {
     framework <- isolate(database$framework)
     req(input$clinic_file)
-        if(tools::file_ext(input$study_file$datapath) == "csv"){
-          data <- read.csv(input$study_file$datapath,
+        if(tools::file_ext(input$clinic_file$datapath) == "csv"){
+          data <- read.csv(input$clinic_file$datapath,
                            header = TRUE, sep = input$separator,
                            quote  ="")
-        } else if(tools::file_ext(input$study_file$datapath) == "txt"){
-          data <- read.table(input$study_file$datapath, header = TRUE)
+        } else if(tools::file_ext(input$clinic_file$datapath) == "txt"){
+          data <- read.table(input$clinic_file$datapath, header = TRUE)
         }
         framework$Clinical <- data
         database$framework <- framework
@@ -746,7 +748,7 @@ server <- function(input, output, session) {
                                               "text/comma-separated-values", "text/plain",
                                               ".csv", ".txt"))
       })
-      new_analysis_choices <- colnames(data)
+      new_analysis_choices <- colnames(data)[-1]
       updateSelectInput(session, "select_variable3", "Select clinical variable", choices = c("No clinical variable has been selected",
                                                                                              new_analysis_choices))
   })
@@ -817,7 +819,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             result <- result + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -828,7 +831,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             result <- result + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -855,7 +859,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -866,7 +871,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -895,7 +901,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -906,7 +913,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -935,7 +943,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -946,7 +955,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -976,7 +986,8 @@ server <- function(input, output, session) {
       if(input$interval_input != "No intervals have been set"){
         intervals <- ShowLocatorIndices(framework, "intervals")[2,]
         interval <- match(input$interval_input, intervals)
-        if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+        if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+           (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
           Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                  alpha = 0.5, xmin = 
                                                    framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -987,7 +998,8 @@ server <- function(input, output, session) {
       if(input$control_input != "No control has been set"){
         intervals <- ShowLocatorIndices(framework, "intervals")[2,]
         interval <- match(input$control_input, intervals)
-        if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+        if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+           (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
           Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                  alpha = 0.5, xmin = 
                                                    framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1018,7 +1030,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1029,7 +1042,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1058,7 +1072,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1069,7 +1084,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1099,7 +1115,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1110,7 +1127,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1139,7 +1157,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1150,7 +1169,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1179,7 +1199,8 @@ server <- function(input, output, session) {
         if(input$interval_input != "No intervals have been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$interval_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "red", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1190,7 +1211,8 @@ server <- function(input, output, session) {
         if(input$control_input != "No control has been set"){
           intervals <- ShowLocatorIndices(framework, "intervals")[2,]
           interval <- match(input$control_input, intervals)
-          if(!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis])){
+          if((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1,]) > 0) &&
+             (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]))){
             Results <- Results + ggplot2::annotate("rect", fill = "blue", 
                                                    alpha = 0.5, xmin = 
                                                      framework$IndividualIndices[[interval]]$Time_DWT[1,chosen_analysis]*60,
@@ -1783,7 +1805,7 @@ server <- function(input, output, session) {
         if(!is.null(restrict)){
            PlotIndicesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
                                     restrict = restrict, ymax = input$maxEst_dwt) 
-        }
+        } 
     })
     }
   })
@@ -1803,7 +1825,7 @@ server <- function(input, output, session) {
     if(!is.null(restrict)){
       PlotIndicesFromAnalysis(framework, analysis, "dwt", newPlot = FALSE,
                               restrict = restrict, ymax = input$maxEst_dwt) 
-    }
+    } 
     }
   })
   #######################################################################################################
@@ -1818,8 +1840,8 @@ server <- function(input, output, session) {
       intervals <- ShowLocatorIndices(framework, "intervals")[2,]
       test <- match(input$test_var_in_test , intervals)
       control <- match(input$con_var_in_test, intervals)
-      framework <- TestGroups(framework, test, control, name = input$test_name, method = "t.test")
-      framework <- TestHRV(framework, test, control, name = input$test_name, method = "t.test", normalize = input$norm_hrv)
+      framework <- TestGroups(framework, test, control, name = input$test_name, method = NULL, showerror = FALSE)
+      framework <- TestHRV(framework, test, control, name = input$test_name, method = NULL, normalize = input$norm_hrv, showerror = FALSE)
       tests <- ShowLocatorIndices(framework, "tests")[2,]
       updateSelectInput(session, "select_testHRV", "Select test", choices = c("No test has been selected", tests))
       updateSelectInput(session, "select_test", "Select test", choices = c("No test has been selected", tests))
@@ -1859,9 +1881,28 @@ server <- function(input, output, session) {
     
   })
   
+  #########################################################################################################
+  
+  ###### 17. DOWNLOAD TEMPLATE FOR CLINICAL DATA ##########################################################
+  
+  output$C_template <- 
+    downloadHandler(
+      filename = "Clinical data template.csv",
+      content = function(file){
+        framework <- isolate(database$framework)
+        if(framework$n > 0){
+           template <- data.frame(Variable = c("Units", t(ShowLocatorIndices(framework, "analyses")[2,])))
+        } else {
+          template <- data.frame(Variable = c("Units", "First subject", "Second subject", "Third subject"))
+        }
+        write.csv(template, file = file, quote = FALSE, row.names = FALSE)
+      }
+    )
+  ##################################################################################################
+  
   
 ##############################################################################################  
-############### 17. WHAT HAPPENS WHEN THE APP IS CLOSED ######################################  
+############### 18. WHAT HAPPENS WHEN THE APP IS CLOSED ######################################  
   
   session$onSessionEnded(function(){
     stopApp()
