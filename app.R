@@ -24,7 +24,7 @@ ui <- fluidPage(
       tags$hr(),
       radioButtons(
         "separator",
-        "Choose separator",
+        "Choose separator (for CSV files)",
         choices = c(
           Semicolon = ";",
           Comma = ",",
