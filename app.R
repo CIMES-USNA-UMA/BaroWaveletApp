@@ -1153,7 +1153,7 @@ server <- function(input, output, session) {
         } else if (tools::file_ext(input$data_file[[n, "datapath"]]) == "txt") {
           data <- read.table(input$data_file[[n, "datapath"]], header = TRUE)
         }
-        data$Time <- cumsum(data$Time)
+        if(!is.null(data$Time)) data$Time <- cumsum(data$Time)
         if (is.null(data$RR)) {
           data$RR <- c(data$Time[[1]] * 1000, diff(data$Time * 1000))
         } else if (is.null(data$Time)) {
