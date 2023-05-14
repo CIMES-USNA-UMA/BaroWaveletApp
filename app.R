@@ -23,7 +23,7 @@ ui <- fluidPage(
       uiOutput("data_file"),
       tags$hr(),
       radioButtons(
-        "separator",
+        "subject_data_sep",
         "Choose separator (for CSV files)",
         choices = c(
           Semicolon = ";",
@@ -166,7 +166,7 @@ ui <- fluidPage(
           "Use coherence threshold (for Continuous Wavelet Transform)",
           value = TRUE
         )
-      ),),
+      )),
       tags$hr(),
       selectInput(
         "index_method",
@@ -305,7 +305,7 @@ ui <- fluidPage(
                           br()),
                    column(6,
                           h3("LF component"),
-                          br(),)),
+                          br())),
           wellPanel(style = "background:white",
                     fluidRow(
                       column(
@@ -345,7 +345,7 @@ ui <- fluidPage(
                           br()),
                    column(6,
                           h3("LF component"),
-                          br(),)),
+                          br())),
           wellPanel(style = "background:white",
                     fluidRow(
                       column(
@@ -381,7 +381,7 @@ ui <- fluidPage(
                         br()),
                  column(6,
                         h3("LF component"),
-                        br(),)),
+                        br())),
         wellPanel(style = "background:white",
                   fluidRow(
                     column(
@@ -460,7 +460,7 @@ ui <- fluidPage(
                         h3(
                           "LF band (sympathetic)"
                         ),
-                        br(),)),
+                        br())),
         wellPanel(style = "background:white",
                   fluidRow(
                     column(
@@ -551,11 +551,29 @@ ui <- fluidPage(
   fluidRow(column(
     12,
     wellPanel(
-      uiOutput("clinic_file"),
-      downloadButton("C_template", "Download Table Template"),
-      actionButton("load_clin", "Load Clinical Data"),
-      br(),
-      br(),
+      fluidRow(
+        column(
+          9,
+          uiOutput("clinic_file"),
+          downloadButton("C_template", "Download Table Template"),
+          actionButton("load_clin", "Load Clinical Data"),
+        ),
+        column(
+          3,
+          radioButtons(
+            "clin_data_sep",
+            "Choose separator (for CSV files)",
+            choices = c(
+              Semicolon = ";",
+              Comma = ",",
+              Tab =
+                "\t"
+            ),
+            selected = ";"
+          )
+        )
+      ),
+      tags$hr(),
       br(),
       fluidRow(
         column(
@@ -601,13 +619,8 @@ server <- function(input, output, session) {
       "data_file",
       "Upload data file",
       multiple = TRUE,
-      accept = c(
-        "text/csv",
-        "text/comma-separated-values",
-        "text/plain",
-        ".csv",
-        ".txt"
-      )
+      accept = c(".csv",
+                 ".txt")
     )
   })
   output$study_file <- renderUI({
@@ -621,13 +634,8 @@ server <- function(input, output, session) {
       "clinic_file",
       "Upload clinical data",
       multiple = FALSE,
-      accept = c(
-        "text/csv",
-        "text/comma-separated-values",
-        "text/plain",
-        ".csv",
-        ".txt"
-      )
+      accept = c(".csv",
+                 ".txt")
     )
   })
   
@@ -1147,13 +1155,14 @@ server <- function(input, output, session) {
           data <- read.csv(
             input$data_file[[n, "datapath"]],
             header = TRUE,
-            sep = input$separator,
+            sep = input$subject_data_sep,
             quote  = ""
           )
         } else if (tools::file_ext(input$data_file[[n, "datapath"]]) == "txt") {
           data <- read.table(input$data_file[[n, "datapath"]], header = TRUE)
         }
-        if(!is.null(data$Time)) data$Time <- cumsum(data$Time)
+        if (!is.null(data$Time))
+          data$Time <- cumsum(data$Time)
         if (is.null(data$RR)) {
           data$RR <- c(data$Time[[1]] * 1000, diff(data$Time * 1000))
         } else if (is.null(data$Time)) {
@@ -1185,13 +1194,8 @@ server <- function(input, output, session) {
           "data_file",
           "Upload data file",
           multiple = TRUE,
-          accept = c(
-            "text/csv",
-            "text/comma-separated-values",
-            "text/plain",
-            ".csv",
-            ".txt"
-          )
+          accept = c(".csv",
+                     ".txt")
         )
       })
       new_analysis_choices <-
@@ -1222,7 +1226,7 @@ server <- function(input, output, session) {
       data <- read.csv(
         input$clinic_file$datapath,
         header = TRUE,
-        sep = input$separator,
+        sep = input$clin_data_sep,
         quote  = ""
       )
     } else if (tools::file_ext(input$clinic_file$datapath) == "txt") {
@@ -1235,13 +1239,8 @@ server <- function(input, output, session) {
         "clinic_file",
         "Upload clinical data",
         multiple = FALSE,
-        accept = c(
-          "text/csv",
-          "text/comma-separated-values",
-          "text/plain",
-          ".csv",
-          ".txt"
-        )
+        accept = c(".csv",
+                   ".txt")
       )
     })
     new_analysis_choices <- colnames(data)[-1]
@@ -1590,7 +1589,8 @@ server <- function(input, output, session) {
       framework <- isolate(database$framework)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
-      chosen_analysis <- match(input$subject_input, analysis_choices)
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
       Results <-
         PlotAnalyzedBRS(framework,
                         chosen_analysis,
