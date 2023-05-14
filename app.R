@@ -644,10 +644,8 @@ server <- function(input, output, session) {
   ###### 2. INITIAL SETUP #####################################################################
   
   database <- reactiveValues()
-  RAW_database <- reactiveValues()
   framework <- BuildStructure(name = "BaroWavelet Study")
   database$framework <- framework
-  #RAW_database$RAW <- framework
   text_globalname <-
     paste("Name of this study:", isolate(database$framework)$Name)
   text_n <-
@@ -819,7 +817,6 @@ server <- function(input, output, session) {
              "median", "mean")
     # Allow usage of simulation
     if (framework$Name == "Simulation") {
-      #RAW <- isolate(RAW_database$RAW)
       Sim <- InterpolateData(DataSimulation(), f = input$int_freq)
       framework <- AddAnalysis(framework, name = "Simulation")
       framework <-
@@ -1083,7 +1080,6 @@ server <- function(input, output, session) {
       )
     }
     database$framework <- framework
-    #RAW_database$RAW <- framework
   })
   #############################################################################################################
   
@@ -1146,7 +1142,6 @@ server <- function(input, output, session) {
   observeEvent(input$upload_subject_data, {
     names <- strsplit(input$subject_name_input, ", ")[[1]]
     framework <- isolate(database$framework)
-    RAW <- isolate(RAW_database$RAW)
     req(input$data_file)
     if (nrow(input$data_file) == length(names)) {
       N <- length(names)
@@ -1202,7 +1197,6 @@ server <- function(input, output, session) {
         ShowLocatorIndices(framework, "analyses")[2, ]
       updateSelectInput(session, "subject_input", "Select Subject", choices = new_analysis_choices)
       database$framework <- framework
-      RAW_database$RAW <- RAW
       text_n <-
         paste(
           "Number of subjects contained in this study:",
@@ -1308,7 +1302,6 @@ server <- function(input, output, session) {
   ################### 10.1. CARDIOVASCULAR DATA SERIES PLOTS (IBI, BP) ##############################
   output$Raw <- renderPlot({
     if (input$subject_input != "No subjects have been loaded") {
-      RAW <- isolate(RAW_database$RAW)
       framework <- isolate(database$framework)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
@@ -2297,7 +2290,6 @@ server <- function(input, output, session) {
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
-      RAW <- isolate(RAW_database$RAW)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
@@ -2334,7 +2326,6 @@ server <- function(input, output, session) {
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
-      RAW <- isolate(RAW_database$RAW)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
@@ -2814,7 +2805,6 @@ server <- function(input, output, session) {
     if (input$interval_input != "No intervals have been set" &
         input$control_input != "No control has been set") {
       framework <- isolate(database$framework)
-      RAW <- isolate(RAW_database$RAW)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
@@ -2876,7 +2866,6 @@ server <- function(input, output, session) {
     if (input$interval_input != "No intervals have been set" &
         input$control_input != "No control has been set") {
       framework <- isolate(database$framework)
-      RAW <- isolate(RAW_database$RAW)
       analysis_choices <-
         ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
