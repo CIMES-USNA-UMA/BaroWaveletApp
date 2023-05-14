@@ -486,7 +486,6 @@ ui <- fluidPage(
     ))
   )),
   
-  
   fluidRow(column(
     12,
     wellPanel(
