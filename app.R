@@ -1090,7 +1090,7 @@ server <- function(input, output, session) {
       output$text_nintervals <- renderText({
         text_nintervals
       })
-      choices <- ShowLocatorIndices(framework, "intervals")[2,]
+      choices <- ShowLocatorIndices(framework, "intervals")[2, ]
       updateSelectInput(
         session,
         "interval_input",
@@ -1128,40 +1128,52 @@ server <- function(input, output, session) {
   ##############################################################################################################
   
   ############## 8. LOAD INDIVIDUAL SUBJECT DATA ##############################################################
-  observeEvent(input$upload_subject_data, {
-    names <- strsplit(input$subject_name_input, ", ")[[1]]
-    framework <- isolate(database$framework)
-    req(input$data_file)
-    if (nrow(input$data_file) == length(names)) {
-      N <- length(names)
-      for (n in 1:N) {
-        if (tools::file_ext(input$data_file[[n, "datapath"]]) == "csv") {
-          data <- read.csv(
-            input$data_file[[n, "datapath"]],
-            header = TRUE,
-            sep = input$subject_data_sep,
-            quote  = ""
-          )
-        } else if (tools::file_ext(input$data_file[[n, "datapath"]]) == "txt") {
-          data <- read.table(input$data_file[[n, "datapath"]], header = TRUE)
-        }
-        if (is.null(data$RR) & !is.null(data$Time)) {
-          if(all(data$Time == sort(data$Time))){
-             data$RR <- c(data$Time[[1]] * 1000, diff(data$Time * 1000))
+  observeEvent(
+    input$upload_subject_data,
+    {
+      names <- strsplit(input$subject_name_input, ", ")[[1]]
+      framework <- isolate(database$framework)
+      req(input$data_file)
+      if (nrow(input$data_file) == length(names)) {
+        N <- length(names)
+        for (n in 1:N) {
+          if (tools::file_ext(input$data_file[[n, "datapath"]]) == "csv") {
+            data <- read.csv(
+              input$data_file[[n, "datapath"]],
+              header = TRUE,
+              sep = input$subject_data_sep,
+              quote  = ""
+            )
+          } else if (tools::file_ext(input$data_file[[n, "datapath"]]) == "txt") {
+            data <- read.table(input$data_file[[n, "datapath"]], header = TRUE)
           }
-          else {
-            data$RR <- data$Time * 1000
-            data$Time <- cumsum(data$Time)
+          # Check if time is presented both in seconds and minute format (and fix it)
+          if (!is.null(data$Time) &&
+              all(data$Time[1:20] == sort(data$Time[1:20])) &&
+              # Currently it examines the beginning of the vector
+              sum(diff(data$Time) < 0) == 1) {
+            brpt <- match(TRUE, diff(data$Time) < 0) + 1
+            data$Time[brpt:NROW(data$Time)] <-
+              data$Time[brpt:NROW(data$Time)] * 60
           }
-        } else if (is.null(data$Time) & !is.null(data$RR)) {
-          data$Time <- cumsum(data$RR / 1000)
-        }
-        if (input$preprocessing == "Interpolate") {
-          #data <- PreprocessData(data, use.RHRV = FALSE)
-          data <- InterpolateData(data, input$int_freq)
-        } else if (input$preprocessing == "Filter with RHRV and Interpolate") {
-          data <- PreprocessData(data, use.RHRV = TRUE)
-          data <- InterpolateData(data, input$int_freq)
+          # Check both time and RR
+          if (is.null(data$RR) & !is.null(data$Time)) {
+            if (all(data$Time == sort(data$Time))) {
+              data$RR <- c(data$Time[[1]] * 1000, diff(data$Time * 1000))
+            }
+            else {
+              data$RR <- data$Time * 1000
+              data$Time <- cumsum(data$Time)
+            }
+          } else if (is.null(data$Time) & !is.null(data$RR)) {
+            data$Time <- cumsum(data$RR / 1000)
+          }
+          if (input$preprocessing == "Interpolate") {
+            #data <- PreprocessData(data, use.RHRV = FALSE)
+            data <- InterpolateData(data, input$int_freq)
+          } else if (input$preprocessing == "Filter with RHRV and Interpolate") {
+            data <- PreprocessData(data, use.RHRV = TRUE)
+            data <- InterpolateData(data, input$int_freq)
         }
         framework <- AddAnalysis(framework, name = names[[n]])
         framework <-
