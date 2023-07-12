@@ -2397,7 +2397,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        evaluation <- TestIndBRS(brs, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
         if (evaluation[1] <= 0.001) {
@@ -2462,7 +2462,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        evaluation <- TestIndBRS(brs, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
         if (evaluation[1] <= 0.001) {
@@ -2523,7 +2523,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        evaluation <- TestIndBRS(brs, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
         if (evaluation[2] <= 0.001) {
@@ -2590,7 +2590,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndBRS(brs, time_flags1, time_flags2)
+        evaluation <- TestIndBRS(brs, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
         if (evaluation[2] <= 0.001) {
@@ -2651,7 +2651,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        evaluation <- TestIndHRV(hrv, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
         if (evaluation[2] <= 0.001) {
@@ -2712,7 +2712,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        evaluation <- TestIndHRV(hrv, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
         if (evaluation[1] <= 0.001) {
@@ -2773,7 +2773,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
-        evaluation <- TestIndHRV(hrv, time_flags1, time_flags2)
+        evaluation <- TestIndHRV(hrv, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[3] <= 0.05, "Significant", "No significant")
         if (evaluation[3] <= 0.001) {
@@ -2833,7 +2833,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
         evaluation <-
-          TestIndHRandBP(raw_data, time_flags1, time_flags2)
+          TestIndHRandBP(raw_data, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
         if (evaluation[1] <= 0.001) {
@@ -2894,7 +2894,7 @@ server <- function(input, output, session) {
             framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
           )
         evaluation <-
-          TestIndHRandBP(raw_data, time_flags1, time_flags2)
+          TestIndHRandBP(raw_data, time_flags1/60, time_flags2/60)
         sig <-
           ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
         if (evaluation[2] <= 0.001) {
