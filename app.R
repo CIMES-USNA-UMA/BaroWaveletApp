@@ -1157,13 +1157,11 @@ server <- function(input, output, session) {
                      }
                      # Check both time and RR
                      if (is.null(data$RR) & !is.null(data$Time)) {
-                       if (all(data$Time == sort(data$Time))) {
-                         data$RR <- c(data$Time[[1]] * 1000, diff(data$Time * 1000))
-                       }
-                       else {
-                         data$RR <- data$Time * 1000
+                       if (!all(data$Time == sort(data$Time))) {
                          data$Time <- cumsum(data$Time)
                        }
+                       data$RR <-
+                         c(data$Time[[1]] * 1000, diff(data$Time * 1000))
                      } else if (is.null(data$Time) &
                                 !is.null(data$RR)) {
                        data$Time <- cumsum(data$RR / 1000)
