@@ -325,9 +325,13 @@ ui <- fluidPage(
                       column(6,
                              h4(textOutput("CWT_Estimate_HF")),
                              br(),
+                             h4(textOutput("interval_HF_cwt")),
+                             br(),
                              h4(textOutput("pvalue_HF_cwt"))),
                       column(6,
                              h4(textOutput("CWT_Estimate_LF")),
+                             br(),
+                             h4(textOutput("interval_LF_cwt")),
                              br(),
                              h4(textOutput("pvalue_LF_cwt")))
                     )),
@@ -400,9 +404,13 @@ ui <- fluidPage(
                     column(6,
                            h4(textOutput("DWT_Estimate_HF")),
                            br(),
+                           h4(textOutput("interval_HF_dwt")),
+                           br(),
                            h4(textOutput("pvalue_HF"))),
                     column(6,
                            h4(textOutput("DWT_Estimate_LF")),
+                           br(),
+                           h4(textOutput("interval_LF_dwt")),
                            br(),
                            h4(textOutput("pvalue_LF")))
                   )),
@@ -2085,6 +2093,36 @@ server <- function(input, output, session) {
     }
   })
   
+  output$interval_HF_dwt <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2, ]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+        brs <-
+          framework$IndividualIndices[[interval]]$DWT[1, chosen_analysis]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+        paste(
+          "HF estimate at chosen interval from",
+          round(limits[1], 3),
+          "and",
+          round(limits[2], 3),
+          "min:",
+          round(brs, 3),
+          "ms/mmHg"
+        )
+      }
+    }
+  })
+  
+ 
+  
   output$CWT_Estimate_HF <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$Analyzed_brs_brush1)) {
@@ -2129,6 +2167,34 @@ server <- function(input, output, session) {
     }
   })
   
+  output$interval_HF_cwt <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2, ]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_CWT[1, chosen_analysis])) {
+        brs <-
+          framework$IndividualIndices[[interval]]$CWT[1, chosen_analysis]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_CWT[, chosen_analysis]
+        paste(
+          "HF estimate at chosen interval from",
+          round(limits[1], 3),
+          "and",
+          round(limits[2], 3),
+          "min:",
+          round(brs, 3),
+          "ms/mmHg"
+        )
+      }
+    }
+  })
+  
   output$DWT_Estimate_LF <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$Analyzed_brs_brush1)) {
@@ -2168,6 +2234,34 @@ server <- function(input, output, session) {
         round(indices[1, 2], 3),
         "ms/mmHg"
       )
+    }
+  })
+  
+  output$interval_LF_dwt <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2, ]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+        brs <-
+          framework$IndividualIndices[[interval]]$DWT[2, chosen_analysis]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+        paste(
+          "LF estimate at chosen interval from",
+          round(limits[1], 3),
+          "and",
+          round(limits[2], 3),
+          "min:",
+          round(brs, 3),
+          "ms/mmHg"
+        )
+      }
     }
   })
   
@@ -2215,6 +2309,34 @@ server <- function(input, output, session) {
         round(indices[1, 2], 3),
         "ms/mmHg"
       )
+    }
+  })
+  
+  output$interval_LF_cwt <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2, ]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_CWT[1, chosen_analysis])) {
+        brs <-
+          framework$IndividualIndices[[interval]]$CWT[2, chosen_analysis]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_CWT[, chosen_analysis]
+        paste(
+          "LF estimate at chosen interval from",
+          round(limits[1], 3),
+          "and",
+          round(limits[2], 3),
+          "min:",
+          round(brs, 3),
+          "ms/mmHg"
+        )
+      }
     }
   })
   
