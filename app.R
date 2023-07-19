@@ -451,6 +451,10 @@ ui <- fluidPage(
         ),
         fluidRow(column(12,
                         h4(
+                          textOutput("interval_HRV_LFHF")
+                        ),
+                        br(),
+                        h4(
                           textOutput("pvalue_HRV_LFHF")
                         ))),
         fluidRow(column(6,
@@ -480,11 +484,19 @@ ui <- fluidPage(
                         ),
                         br(),
                         h4(
+                          textOutput("interval_HRV_HF")
+                        ),
+                        br(),
+                        h4(
                           textOutput("pvalue_HRV_HF")
                         )),
                  column(6,
                         h4(
                           textOutput("Estimate_LF")
+                        ),
+                        br(),
+                        h4(
+                          textOutput("interval_HRV_LF")
                         ),
                         br(),
                         h4(
@@ -2050,12 +2062,13 @@ server <- function(input, output, session) {
   
   ####################### 11. ESTIMATE TEXTS ######################################################
   
+  
   output$DWT_Estimate_HF <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$Analyzed_brs_brush1)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2098,10 +2111,10 @@ server <- function(input, output, session) {
         input$interval_input != "No intervals have been set") {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2, ]
+        ShowLocatorIndices(framework, "analyses")[2,]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
-      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
         brs <-
@@ -2111,7 +2124,7 @@ server <- function(input, output, session) {
         paste(
           "HF estimate at chosen interval from",
           round(limits[1], 3),
-          "and",
+          "to",
           round(limits[2], 3),
           "min:",
           round(brs, 3),
@@ -2121,14 +2134,14 @@ server <- function(input, output, session) {
     }
   })
   
- 
+  
   
   output$CWT_Estimate_HF <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$Analyzed_brs_brush1)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2172,10 +2185,10 @@ server <- function(input, output, session) {
         input$interval_input != "No intervals have been set") {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2, ]
+        ShowLocatorIndices(framework, "analyses")[2,]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
-      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       if (!is.na(framework$IndividualIndices[[interval]]$Time_CWT[1, chosen_analysis])) {
         brs <-
@@ -2185,7 +2198,7 @@ server <- function(input, output, session) {
         paste(
           "HF estimate at chosen interval from",
           round(limits[1], 3),
-          "and",
+          "to",
           round(limits[2], 3),
           "min:",
           round(brs, 3),
@@ -2200,7 +2213,7 @@ server <- function(input, output, session) {
         !is.null(input$Analyzed_brs_brush1)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2242,10 +2255,10 @@ server <- function(input, output, session) {
         input$interval_input != "No intervals have been set") {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2, ]
+        ShowLocatorIndices(framework, "analyses")[2,]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
-      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
         brs <-
@@ -2255,7 +2268,7 @@ server <- function(input, output, session) {
         paste(
           "LF estimate at chosen interval from",
           round(limits[1], 3),
-          "and",
+          "to",
           round(limits[2], 3),
           "min:",
           round(brs, 3),
@@ -2270,7 +2283,7 @@ server <- function(input, output, session) {
         !is.null(input$Analyzed_brs_brush1)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2317,10 +2330,10 @@ server <- function(input, output, session) {
         input$interval_input != "No intervals have been set") {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2, ]
+        ShowLocatorIndices(framework, "analyses")[2,]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
-      intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
       interval <- match(input$interval_input, intervals)
       if (!is.na(framework$IndividualIndices[[interval]]$Time_CWT[1, chosen_analysis])) {
         brs <-
@@ -2330,7 +2343,7 @@ server <- function(input, output, session) {
         paste(
           "LF estimate at chosen interval from",
           round(limits[1], 3),
-          "and",
+          "to",
           round(limits[2], 3),
           "min:",
           round(brs, 3),
@@ -2346,7 +2359,7 @@ server <- function(input, output, session) {
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2377,12 +2390,42 @@ server <- function(input, output, session) {
     }
   })
   
+  
+  output$interval_HRV_HF <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2,]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+        hrv <-
+          framework$IndividualIndices[[interval]]$HRV[, chosen_analysis]
+        hrv <- hrv[1]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+        paste(
+          "LF estimate at chosen interval from ",
+          round(limits[1], 3),
+          "to",
+          round(limits[2], 3),
+          "min:",
+          round(hrv, 3),
+          "ms2"
+        )
+      }
+    }
+  })
+  
   output$Estimate_LF <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2412,12 +2455,70 @@ server <- function(input, output, session) {
     }
   })
   
+  
+  output$interval_HRV_LF <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2,]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+        hrv <-
+          framework$IndividualIndices[[interval]]$HRV[, chosen_analysis]
+        hrv <- hrv[2]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+        paste(
+          "LF estimate at chosen interval from ",
+          round(limits[1], 3),
+          "to",
+          round(limits[2], 3),
+          "min:",
+          round(hrv, 3),
+          "ms2"
+        )
+      }
+    }
+  })
+  
+  
+  output$interval_HRV_LFHF <- renderText({
+    if (input$subject_input != "No subjects have been loaded" &
+        input$interval_input != "No intervals have been set") {
+      framework <- isolate(database$framework)
+      analysis_choices <-
+        ShowLocatorIndices(framework, "analyses")[2,]
+      chosen_analysis <-
+        match(input$subject_input, analysis_choices)
+      intervals <- ShowLocatorIndices(framework, "intervals")[2,]
+      interval <- match(input$interval_input, intervals)
+      if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+        hrv <-
+          framework$IndividualIndices[[interval]]$HRV[3, chosen_analysis]
+        limits <-
+          framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+        paste(
+          "LF/HF ratio estimate at chosen interval from",
+          round(limits[1], 3),
+          "to",
+          round(limits[2], 3),
+          "min:",
+          round(hrv, 3)
+        )
+      }
+    }
+  })
+  
   output$Estimate_HR <- renderText({
     if (input$subject_input != "No subjects have been loaded" &
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
@@ -2453,7 +2554,7 @@ server <- function(input, output, session) {
         !is.null(input$brush_raw)) {
       framework <- isolate(database$framework)
       analysis_choices <-
-        ShowLocatorIndices(framework, "analyses")[2,]
+        ShowLocatorIndices(framework, "analyses")[2, ]
       chosen_analysis <-
         match(input$subject_input, analysis_choices)
       Data <- framework$"General Data"
