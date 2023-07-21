@@ -9,7 +9,7 @@ Marc Stefan Dawid Milner.
 
 ## How to access the app
 
-To use this shiny app, first you will need to install packages *shiny*, *ggplot2*, *ggpubr*, *gridExtra* and *BaroWavelet*.
+To use this shiny app, first you will need to install packages *shiny* and *BaroWavelet*, including its dependencies.
 Then, you can access the app with the following code line in R:
 
 ```ruby
