@@ -7,7 +7,7 @@ with the *BaroWavelet* package.
 
 ## How to access the app
 
-To use this shiny app, first you will need to install packages *shiny* and *BaroWavelet*, including its dependencies. Then, you can access the app with 
+To use this shiny app, first you will need to install packages *shiny* and *BaroWavelet* (more info about BaroWavelet and how to download it [here](https://github.com/CIMES-USNA-UMA/BaroWavelet)), including its dependencies. Then, you can access the app with 
 the following code line in R:
 
 ```ruby
