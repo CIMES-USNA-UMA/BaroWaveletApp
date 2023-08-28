@@ -252,7 +252,9 @@ ui <- fluidPage(
       tags$hr(),
       wellPanel(
         style = "background:white",
-        plotOutput("Raw", brush = "brush_raw", dblclick = "dbc_raw")
+        plotOutput("Raw", 
+                   brush = "brush_raw", 
+                   dblclick = "dbc_raw")
       ),
       fluidRow(column(6,
                       h4(
@@ -456,7 +458,10 @@ ui <- fluidPage(
         br(),
         wellPanel(
           style = "background:white",
-          plotOutput("hrv_LF/HF", brush = "brush_raw", dblclick = "dbc_raw")
+          plotOutput("hrv_LFHF", 
+                     brush = "brush_raw", 
+                     dblclick = "dbc_raw"
+                     )
         ),
         fluidRow(column(
           12,
@@ -477,12 +482,18 @@ ui <- fluidPage(
                     column(
                       6,
                       br(),
-                      plotOutput("hrv_HF", brush = "brush_raw", dblclick = "dbc_raw")
+                      plotOutput("hrv_HF", 
+                                 brush = "brush_raw", 
+                                 dblclick = "dbc_raw"
+                                 )
                     ),
                     column(
                       6,
                       br(),
-                      plotOutput("hrv_LF", brush = "brush_raw", dblclick = "dbc_raw")
+                      plotOutput("hrv_LF", 
+                                 brush = "brush_raw",
+                                 dblclick = "dbc_raw"
+                                 )
                     )
                   )),
         fluidRow(
@@ -1458,7 +1469,7 @@ server <- function(input, output, session) {
   #####################################################################################################
   
   ############## 10.2. LF/HF RATIO PLOT ###############################################################
-  output$"hrv_LF/HF" <- renderPlot({
+  output$hrv_LFHF <- renderPlot({
     tryCatch({
       if (input$subject_input != "No subjects have been loaded") {
         framework <- isolate(database$framework)
@@ -1520,7 +1531,6 @@ server <- function(input, output, session) {
           return(Results)
         }
       }
-      
     }, error = function(barowavelet_error) {
       showNotification(paste0(barowavelet_error),
                        type = "error",
