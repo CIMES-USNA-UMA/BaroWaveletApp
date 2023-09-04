@@ -1484,7 +1484,8 @@ server <- function(input, output, session) {
             plotLF = TRUE,
             plotHF = TRUE,
             ratio = TRUE,
-            newPlot = FALSE
+            newPlot = FALSE,
+            use.ggplot = TRUE
           )
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
@@ -1555,7 +1556,8 @@ server <- function(input, output, session) {
             chosen_analysis,
             plotLF = FALSE,
             plotHF = TRUE,
-            newPlot = FALSE
+            newPlot = FALSE,
+            use.ggplot = TRUE
           )
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
@@ -1627,7 +1629,8 @@ server <- function(input, output, session) {
             chosen_analysis,
             plotHF = FALSE,
             plotLF = TRUE,
-            newPlot = FALSE
+            newPlot = FALSE,
+            use.ggplot = TRUE
           )
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
@@ -1699,7 +1702,8 @@ server <- function(input, output, session) {
                           chosen_analysis,
                           "dwt",
                           newPlot = FALSE,
-                          plotLF = FALSE)
+                          plotLF = FALSE,
+                          use.ggplot = TRUE)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1772,7 +1776,8 @@ server <- function(input, output, session) {
             "cwt.phase",
             newPlot = FALSE,
             plotLF = FALSE,
-            thr = input$coherence_val
+            thr = input$coherence_val,
+            use.ggplot = TRUE
           )
         Results <- Results + ggplot2::ylim(-pi, pi)
         if (input$interval_input != "No intervals have been set" |
@@ -1844,7 +1849,8 @@ server <- function(input, output, session) {
                           chosen_analysis,
                           "dwt",
                           newPlot = FALSE,
-                          plotHF = FALSE)
+                          plotHF = FALSE,
+                          use.ggplot = TRUE)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1917,7 +1923,8 @@ server <- function(input, output, session) {
             "cwt.avg",
             newPlot = FALSE,
             plotLF = FALSE,
-            thr = input$coherence_val
+            thr = input$coherence_val,
+            use.ggplot = TRUE
           )
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
@@ -1990,7 +1997,8 @@ server <- function(input, output, session) {
             "cwt.avg",
             newPlot = FALSE,
             plotHF = FALSE,
-            thr = input$coherence_val
+            thr = input$coherence_val,
+            use.ggplot = TRUE
           )
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
@@ -2062,7 +2070,8 @@ server <- function(input, output, session) {
             "cwt.phase",
             newPlot = FALSE,
             plotHF = FALSE,
-            thr = input$coherence_val
+            thr = input$coherence_val,
+            use.ggplot = TRUE
           )
         Results <- Results + ggplot2::ylim(-pi, pi)
         if (input$interval_input != "No intervals have been set" |
@@ -2139,7 +2148,8 @@ server <- function(input, output, session) {
             method = "cwt",
             tem = TRUE,
             newPlot = FALSE,
-            thr = input$coherence_val
+            thr = input$coherence_val, 
+            use.ggplot = TRUE
           )
         #return(list(src = Results, contentType = "image/png", width = 1500, height = 400, alt = "CWT Transfer Function"))
         return(
