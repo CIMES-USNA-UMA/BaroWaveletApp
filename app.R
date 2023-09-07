@@ -250,6 +250,38 @@ ui <- fluidPage(
                       choices = "No control has been set")
         )
       ),
+      br(),
+      fluidRow(
+        column(4,
+               numericInput(
+                 "min_manual",
+                 "From",
+                 value = 0,
+                 min = 0,
+                 step = 0.0001
+               )
+        ),
+        column(4,
+               numericInput(
+                 "max_manual",
+                 "To",
+                 value = 0,
+                 min = 0,
+                 step = 0.0001
+               )
+        ),
+        column(4,
+               selectInput(
+                 "manual_units",
+                 "Units",
+                 choices = c("s", "min"),
+                 selected = "s",
+                 width = 70
+               )
+        ),
+      ),
+      actionButton("confirm_manual", "Confirm Interval Limits"),
+      br(),
       h3("Recordings"),
       tags$hr(),
       wellPanel(
@@ -2851,7 +2883,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndBRS(brs, time_flags1 / 60, time_flags2 / 60)
+            TestIndBRS(brs, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
           if (evaluation[1] <= 0.001) {
@@ -2923,7 +2955,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndBRS(brs, time_flags1 / 60, time_flags2 / 60)
+            TestIndBRS(brs, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
           if (evaluation[1] <= 0.001) {
@@ -2991,7 +3023,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndBRS(brs, time_flags1 / 60, time_flags2 / 60)
+            TestIndBRS(brs, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
           if (evaluation[2] <= 0.001) {
@@ -3065,7 +3097,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndBRS(brs, time_flags1 / 60, time_flags2 / 60)
+            TestIndBRS(brs, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
           if (evaluation[2] <= 0.001) {
@@ -3133,7 +3165,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndHRV(hrv, time_flags1 / 60, time_flags2 / 60)
+            TestIndHRV(hrv, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
           if (evaluation[2] <= 0.001) {
@@ -3201,7 +3233,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndHRV(hrv, time_flags1 / 60, time_flags2 / 60)
+            TestIndHRV(hrv, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
           if (evaluation[1] <= 0.001) {
@@ -3269,7 +3301,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndHRV(hrv, time_flags1 / 60, time_flags2 / 60)
+            TestIndHRV(hrv, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[3] <= 0.05, "Significant", "No significant")
           if (evaluation[3] <= 0.001) {
@@ -3335,7 +3367,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndHRandBP(raw_data, time_flags1 / 60, time_flags2 / 60)
+            TestIndHRandBP(raw_data, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
           if (evaluation[1] <= 0.001) {
@@ -3402,7 +3434,7 @@ server <- function(input, output, session) {
               framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
             )
           evaluation <-
-            TestIndHRandBP(raw_data, time_flags1 / 60, time_flags2 / 60)
+            TestIndHRandBP(raw_data, time_flags1, time_flags2)
           sig <-
             ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
           if (evaluation[2] <= 0.001) {
@@ -3444,7 +3476,7 @@ server <- function(input, output, session) {
   
   ########################################################################################################
   
-  ############## 13. DOUBLE-CLICK TO SELECT INTERVALS #################################################
+  ############## 13.1. DOUBLE-CLICK TO SELECT INTERVALS #################################################
   observeEvent(input$dbc_raw, {
     tryCatch({
       check_brush <- !is.null(input$brush_raw)
@@ -3467,9 +3499,12 @@ server <- function(input, output, session) {
         )
         
         database$framework <- framework
+        
+        
+        
         #########################################################################################################
         
-        ################### 14. PLOT ESTIMATES ########################################################################
+        ################### 14.1 PLOT ESTIMATES ########################################################################
         
         output$IndividualIndices_DWT_Plot <- renderPlot({
           framework <- isolate(database$framework)
@@ -3499,6 +3534,76 @@ server <- function(input, output, session) {
                        duration = NULL)
     })
   })
+  
+  
+  ############## 13.2. SELECT INTERVALS MANUALLY#################################################
+  observeEvent(input$confirm_manual, {
+    tryCatch({
+      check_subject <-
+        input$subject_input != "No subjects have been loaded"
+      check_interval <-
+        input$interval_input != "No intervals have been set"
+      if (check_subject & check_interval) {
+        chosen_min_manual <- input$min_manual
+        chosen_max_manual <- input$max_manual
+        if(chosen_min_manual == chosen_max_manual) stop("Please select different limits")
+        if(chosen_min_manual > chosen_max_manual){
+           old_min <- chosen_max_manual
+           chosen_max_manual <- chosen_min_manual
+           chosen_min_manual <- old_min
+        }
+        if(input$manual_units == "s"){
+          chosen_min_manual <- chosen_min_manual / 60
+          chosen_max_manual <- chosen_max_manual / 60
+        }
+        framework <- isolate(database$framework)
+        analyses <- ShowLocatorIndices(framework, "analyses")[2, ]
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        analysis <- match(input$subject_input, analyses)
+        interval <- match(input$interval_input, intervals)
+        framework <- AnalyzeBRSIndices(
+          framework,
+          analysis,
+          interval,
+          c(chosen_min_manual,
+            chosen_max_manual)
+        )
+        
+        database$framework <- framework
+        
+        #########################################################################################################
+        
+        ################### 14.2 PLOT ESTIMATES ########################################################################
+        
+        output$IndividualIndices_DWT_Plot <- renderPlot({
+          framework <- isolate(database$framework)
+          analyses <- ShowLocatorIndices(framework, "analyses")[2, ]
+          analysis <- match(input$subject_input, analyses)
+          restrict <- NULL
+          for (n in 1:length(framework$IndividualIndices)) {
+            if (length(framework$IndividualIndices[[n]]$DWT) != 0 &&
+                !is.na(framework$IndividualIndices[[n]]$DWT[1, analysis]))
+              restrict <- c(restrict, n)
+          }
+          if (!is.null(restrict)) {
+            PlotIndicesFromAnalysis(
+              framework,
+              analysis,
+              "dwt",
+              newPlot = FALSE,
+              restrict = restrict,
+              ymax = input$maxEst_dwt
+            )
+          }
+        })
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(paste0(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
   
   output$IndividualIndices_DWT_Plot <- renderPlot({
     check_subject <-
