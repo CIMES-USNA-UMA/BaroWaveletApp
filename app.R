@@ -198,7 +198,16 @@ ui <- fluidPage(
       h3("Set Intervals"),
       br(),
       textInput("interval_names", "Name the Intervals", value = "Intervals"),
-      actionButton("confirm_interval_names", "Confirm Interval Names")
+      actionButton("confirm_interval_names", "Confirm Interval Names"),
+      # POSSIBLE FUTURE ADDITION
+      #br(),
+      #br(),
+      #p(
+      #  "Provide a name for a specific interval to be analyzed, or a list of several intervals. In the latter
+      #  case, said interval names must be separated by commas, as in the following example: Interval 1, 
+      #  Interval 2, Interval 3.",
+      #  style = "text-align:justify;color:black;background:white;padding:15px;border-radius:10px"
+      #),
     )
   )),
   fluidRow(column(12,
@@ -281,6 +290,15 @@ ui <- fluidPage(
         ),
       ),
       actionButton("confirm_manual", "Confirm Interval Limits"),
+     # POSSIBLE FUTURE ADDITION:
+     #  br(),
+     #  br(),
+     #         p(
+     #           "To add data to a specific interval, first choose the interval of interest. Then, either
+     #           stablish the numeric imputs that define the minimum and maximum time limits of said interval,
+     #           or drag the mouse on the graphs and double click on the selected area.",
+     #           style = "text-align:justify;color:black;background:white;padding:15px;border-radius:10px"
+     #         ),
       br(),
       h3("Recordings"),
       tags$hr(),
@@ -656,7 +674,56 @@ ui <- fluidPage(
                 plotOutput("plot_linear")),
       h4(textOutput("model_stats"))
     )
+  )),
+  # Background and references section
+  fluidRow(column(
+    12,
+    wellPanel(
+      h2("About this tool"),
+      br(),
+      p(
+        "BaroWaveletApp is a shiny application [1] developed to accomodate the workflow of the
+      algorithms incorporated in the BaroWavelet R package. This shiny application is also powered by package
+      ggplot2 [2] and package tools, which constitutes part of R [3]. BaroWavelet is a tool developed for the analysis
+      of baroreflex sensitivity in the time-frequency domains using wavelet transforms. For more information
+      regarding the background of this tool, we refer to the following publication:",
+        style = "text-align:justify;color:black"
+      ),
+      br(),
+      p(
+        "A Chao-Ecija , MS Dawid-Milner , BaroWavelet: An R-based tool for dynamic
+    baroreflex evaluation through wavelet analysis techniques, Computer Methods and
+    Programs in Biomedicine (2023), doi: <https://doi.org/10.1016/j.cmpb.2023.107758.>",
+        style = "text-align:justify;color:black;background-color:white;padding:15px;border-radius:10px"
+      ),
+      br(),
+      p(
+        "Kindly cite this publication if you use BaroWavelet in your research. For further
+      information, issues or requests, please contact the maintainer Alvaro Chao-Ecija (alvarochaoecija.rprojects@gmail.com).",
+        style = "text-align:justify;color:black"
+      ),
+      br(),
+      tags$hr(),
+      h3("References"),
+      br(),
+      p(
+        "1. Chang W, Cheng J, Allaire J, Sievert C, Schloerke B, Xie Y, Allen J, McPherson J, Dipert A,
+  Borges B (2023). shiny: Web Application Framework for R. R package version 1.7.5,
+  <https://CRAN.R-project.org/package=shiny.>",
+        style = "text-align:justify;color:black;padding:15px;border-radius:10px"
+      ),
+      p(
+        "2. H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.",
+        style = "text-align:justify;color:black;padding:15px;border-radius:10px"
+      ),
+      p(
+        "3. R Core Team (2023). R: A Language and Environment for Statistical Computing. R Foundation for
+  Statistical Computing, Vienna, Austria. <https://www.R-project.org/.>",
+        style = "text-align:justify;color:black;padding:15px;border-radius:10px"
+      )
+    )
   ))
+  
 )
 ##################### END OF UI #############################################################
 
