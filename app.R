@@ -8,7 +8,7 @@
 library(shiny)
 library(tools) # Part of R. Used for file extension checks
 library(ggplot2) # To improve plots
-require(BaroWavelet)
+library(BaroWavelet)
 ##############################################################################################
 
 ##############################################################################################
