@@ -6,6 +6,8 @@
 
 # LOAD PACKAGES ##############################################################################
 library(shiny)
+library(tools) # For file extension checks
+library(ggplot2) # To improve plots
 require(BaroWavelet)
 ##############################################################################################
 
@@ -1199,14 +1201,14 @@ server <- function(input, output, session) {
                    if (nrow(input$data_file) == length(names)) {
                      N <- length(names)
                      for (n in 1:N) {
-                       if (tools::file_ext(input$data_file[[n, "datapath"]]) == "csv") {
+                       if (file_ext(input$data_file[[n, "datapath"]]) == "csv") {
                          data <- read.csv(
                            input$data_file[[n, "datapath"]],
                            header = TRUE,
                            sep = input$subject_data_sep,
                            quote  = ""
                          )
-                       } else if (tools::file_ext(input$data_file[[n, "datapath"]]) == "txt") {
+                       } else if (file_ext(input$data_file[[n, "datapath"]]) == "txt") {
                          data <- read.table(input$data_file[[n, "datapath"]], header = TRUE)
                        }
                        # Check if time is presented both in seconds and minute format (and fix it)
@@ -1289,14 +1291,14 @@ server <- function(input, output, session) {
     tryCatch({
       framework <- isolate(database$framework)
       req(input$clinic_file)
-      if (tools::file_ext(input$clinic_file$datapath) == "csv") {
+      if (file_ext(input$clinic_file$datapath) == "csv") {
         data <- read.csv(
           input$clinic_file$datapath,
           header = TRUE,
           sep = input$clin_data_sep,
           quote  = ""
         )
-      } else if (tools::file_ext(input$clinic_file$datapath) == "txt") {
+      } else if (file_ext(input$clinic_file$datapath) == "txt") {
         data <- read.table(input$clinic_file$datapath, header = TRUE)
       }
       framework$Clinical <- data
@@ -1397,14 +1399,14 @@ server <- function(input, output, session) {
         raw_data <- framework$Analyses[[chosen_analysis]]$Data
         raw_data[, "RR"] <- 60000 / raw_data[, "RR"]
         result <-
-          ggplot2::ggplot(data = data.frame(raw_data), ggplot2::aes(Time)) +
-          ggplot2::geom_line(ggplot2::aes(y = RR, colour = "HR")) +
-          ggplot2::geom_line(ggplot2::aes(y = SBP, colour = "SBP")) +
-          ggplot2::theme(axis.title.y = ggplot2::element_blank())
+          ggplot(data = data.frame(raw_data), aes(Time)) +
+          geom_line(aes(y = RR, colour = "HR")) +
+          geom_line(aes(y = SBP, colour = "SBP")) +
+          theme(axis.title.y = element_blank())
         raw_time <- raw_data[, "Time"]
         Time <- framework$Analyses[[chosen_analysis]]$Data[, "Time"]
         if (max(raw_time) != max(Time) | min(raw_time) != min(Time)) {
-          result <- result + ggplot2::annotate(
+          result <- result + annotate(
             "rect",
             fill = "red",
             alpha = 0.5,
@@ -1422,7 +1424,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              result <- result + ggplot2::annotate(
+              result <- result + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1441,7 +1443,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              result <- result + ggplot2::annotate(
+              result <- result + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1494,7 +1496,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1513,7 +1515,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1566,7 +1568,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1585,7 +1587,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1639,7 +1641,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1658,7 +1660,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1711,7 +1713,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1730,7 +1732,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1779,7 +1781,7 @@ server <- function(input, output, session) {
             thr = input$coherence_val,
             use.ggplot = TRUE
           )
-        Results <- Results + ggplot2::ylim(-pi, pi)
+        Results <- Results + ylim(-pi, pi)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1787,7 +1789,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1806,7 +1808,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1858,7 +1860,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1877,7 +1879,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -1933,7 +1935,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -1952,7 +1954,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -2007,7 +2009,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -2026,7 +2028,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
@@ -2073,7 +2075,7 @@ server <- function(input, output, session) {
             thr = input$coherence_val,
             use.ggplot = TRUE
           )
-        Results <- Results + ggplot2::ylim(-pi, pi)
+        Results <- Results + ylim(-pi, pi)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -2081,7 +2083,7 @@ server <- function(input, output, session) {
             interval <- match(input$interval_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "red",
                 alpha = 0.5,
@@ -2100,7 +2102,7 @@ server <- function(input, output, session) {
             interval <- match(input$control_input, intervals)
             if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
                 (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
-              Results <- Results + ggplot2::annotate(
+              Results <- Results + annotate(
                 "rect",
                 fill = "blue",
                 alpha = 0.5,
