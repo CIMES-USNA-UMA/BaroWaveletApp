@@ -22,7 +22,7 @@ BaroWavelet::RunBaroWaveletApp()
 
 ## Citation
 
-To cite *BaroWavelet*, use the following citation information:
+To cite this project or *BaroWavelet*, use the following citation information:
 
 ```ruby
 citation("BaroWavelet")
