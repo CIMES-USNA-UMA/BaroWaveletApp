@@ -885,7 +885,7 @@ server <- function(input, output, session) {
         step = 0.001
       )
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -902,7 +902,7 @@ server <- function(input, output, session) {
         step = 0.001
       )
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1044,7 +1044,7 @@ server <- function(input, output, session) {
       })
       database$framework <- framework
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1222,7 +1222,7 @@ server <- function(input, output, session) {
       }
       database$framework <- framework
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1282,7 +1282,7 @@ server <- function(input, output, session) {
         database$framework <- framework
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1377,7 +1377,7 @@ server <- function(input, output, session) {
                      
                    }
                  }, error = function(barowavelet_error) {
-                   showNotification(paste0(barowavelet_error),
+                   showNotification(as.character(barowavelet_error),
                                     type = "error",
                                     duration = NULL)
                  })
@@ -1422,7 +1422,7 @@ server <- function(input, output, session) {
         )
       )
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1476,7 +1476,7 @@ server <- function(input, output, session) {
         })
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1562,7 +1562,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1634,7 +1634,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1707,7 +1707,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1780,7 +1780,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1852,7 +1852,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1928,7 +1928,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -1999,7 +1999,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2074,7 +2074,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2148,7 +2148,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2222,7 +2222,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2287,7 +2287,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2346,7 +2346,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2380,7 +2380,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2432,7 +2432,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2466,7 +2466,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2514,7 +2514,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2548,7 +2548,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2601,7 +2601,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2635,7 +2635,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2678,7 +2678,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2714,7 +2714,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2755,7 +2755,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2791,7 +2791,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2825,7 +2825,7 @@ server <- function(input, output, session) {
         }
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2867,7 +2867,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2909,7 +2909,7 @@ server <- function(input, output, session) {
         )
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -2983,7 +2983,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3055,7 +3055,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3123,7 +3123,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3197,7 +3197,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3265,7 +3265,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3333,7 +3333,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3401,7 +3401,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3468,7 +3468,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3535,7 +3535,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3596,7 +3596,7 @@ server <- function(input, output, session) {
         })
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3665,7 +3665,7 @@ server <- function(input, output, session) {
         })
       }
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3757,7 +3757,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3782,7 +3782,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
@@ -3803,7 +3803,7 @@ server <- function(input, output, session) {
       }
       
     }, error = function(barowavelet_error) {
-      showNotification(paste0(barowavelet_error),
+      showNotification(as.character(barowavelet_error),
                        type = "error",
                        duration = NULL)
     })
