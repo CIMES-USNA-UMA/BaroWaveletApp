@@ -2673,7 +2673,7 @@ server <- function(input, output, session) {
           "and",
           round(input$brush_raw$xmax / 60, 3),
           "min:",
-          round(indices[1], 3),
+          round(indices[1,1], 3),
           "ms2"
         )
       }
@@ -2750,7 +2750,7 @@ server <- function(input, output, session) {
           "and",
           round(input$brush_raw$xmax / 60, 3),
           "min:",
-          round(indices[2], 3),
+          round(indices[1,2], 3),
           "ms2"
         )
       }
