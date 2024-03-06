@@ -302,6 +302,19 @@ ui <- fluidPage(
       br(),
       h3("Recordings"),
       tags$hr(),
+      fluidRow(
+       column(12,
+                     sidebarPanel(
+                       width = 15,
+                       sliderInput(
+                         "side_time",
+                         "Time (sec):",
+                         min = 0,
+                         max = 1,
+                         value = c(0,1),
+                         step = 0.1
+                       )
+                     ))),
       wellPanel(
         style = "background:white",
         plotOutput("Raw", 
@@ -355,6 +368,30 @@ ui <- fluidPage(
                    column(6,
                           h3("LF component"),
                           br())),
+          fluidRow(column(6,
+                          sidebarPanel(
+                            width = 15,
+                            sliderInput(
+                              "side_maxHF_cwt",
+                              "BRS (ms/mmHg):",
+                              min = 0,
+                              max = 1,
+                              value = c(0,1),
+                              step = 0.1
+                            )
+                          )),
+                   column(6,
+                          sidebarPanel(
+                            width = 15,
+                            sliderInput(
+                              "side_maxLF_cwt",
+                              "BRS (ms/mmHg):",
+                              min = 0,
+                              max = 1,
+                              value = c(0,1),
+                              step = 0.1
+                            )
+                          ))),
           wellPanel(style = "background:white",
                     fluidRow(
                       column(
@@ -375,7 +412,7 @@ ui <- fluidPage(
                           dblclick = "Analyzed_brs_dbc1"
                         )
                       )
-                    ),
+                    )),
                     fluidRow(
                       column(
                         6,
@@ -393,7 +430,7 @@ ui <- fluidPage(
                         br(),
                         h4(textOutput("pvalue_LF_cwt"))
                       )
-                    )),
+                    ),
           br(),
           h3("Phase shift"),
           br(),
@@ -428,8 +465,8 @@ ui <- fluidPage(
         br(),
         tags$hr(),
         br(),
-        h3("Baroreflex Sensitivity (DWT)"),
         br(),
+        h3("Baroreflex Sensitivity (DWT)"),
         tags$hr(),
         br(),
         fluidRow(column(6,
@@ -438,6 +475,30 @@ ui <- fluidPage(
                  column(6,
                         h3("LF component"),
                         br())),
+        fluidRow(column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxHF_brs.dwt",
+                            "BRS (ms/mmHg):",
+                            min = 0,
+                            max = 1,
+                            value = c(0,1),
+                            step = 0.1
+                          )
+                        )),
+                 column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxLF_brs.dwt",
+                            "BRS (ms/mmHg):",
+                            min = 0,
+                            max = 1,
+                            value = c(0,1),
+                            step = 0.1
+                          )
+                        ))),
         wellPanel(style = "background:white",
                   fluidRow(
                     column(
@@ -458,7 +519,7 @@ ui <- fluidPage(
                         dblclick = "Analyzed_brs_dbc1"
                       )
                     )
-                  ),
+                  )),
                   fluidRow(
                     column(
                       6,
@@ -476,7 +537,7 @@ ui <- fluidPage(
                       br(),
                       h4(textOutput("pvalue_LF"))
                     )
-                  )),
+                  ),
         tags$hr(),
         sidebarLayout(
           sidebarPanel(
@@ -508,6 +569,18 @@ ui <- fluidPage(
         br(),
         h3("LF/HF ratio"),
         br(),
+        fluidRow(column(12,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxLFHF_dwt",
+                            "LF/HF ratio:",
+                            min = 0,
+                            max = 1,
+                            value = c(0,1),
+                            step = 0.1
+                          )
+                        ))),
         wellPanel(
           style = "background:white",
           plotOutput("hrv_LFHF", 
@@ -529,6 +602,30 @@ ui <- fluidPage(
                           "LF band (sympathetic)"
                         ),
                         br())),
+        fluidRow(column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxHF_dwt",
+                            "HF HRV (power):",
+                            min = 0,
+                            max = 1,
+                            value = c(0,1),
+                            step = 0.1
+                          )
+                        )),
+                 column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxLF_dwt",
+                            "LF HRV (power):",
+                            min = 0,
+                            max = 1,
+                            value = c(0,1),
+                            step = 0.1
+                          )
+                        ))),
         wellPanel(style = "background:white",
                   fluidRow(
                     column(
@@ -564,6 +661,68 @@ ui <- fluidPage(
             h4(textOutput("interval_HRV_LF")),
             br(),
             h4(textOutput("pvalue_HRV_LF"))
+          )
+        ),
+        br(),
+        fluidRow(column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxHFnu_dwt",
+                            "HF HRV (n.u.):",
+                            min = 0,
+                            max = 100,
+                            value = c(0,100),
+                            step = 0.1
+                          )
+                        )),
+                 column(6,
+                        sidebarPanel(
+                          width = 15,
+                          sliderInput(
+                            "side_maxLFnu_dwt",
+                            "LF HRV (n.u.):",
+                            min = 0,
+                            max = 100,
+                            value = c(0,100),
+                            step = 0.1
+                          )
+                        ))),
+        wellPanel(style = "background:white",
+                  fluidRow(
+                    column(
+                      6,
+                      br(),
+                      plotOutput("hrv_HFnu", 
+                                 brush = "brush_raw", 
+                                 dblclick = "dbc_raw"
+                      )
+                    ),
+                    column(
+                      6,
+                      br(),
+                      plotOutput("hrv_LFnu", 
+                                 brush = "brush_raw",
+                                 dblclick = "dbc_raw"
+                      )
+                    )
+                  )),
+        fluidRow(
+          column(
+            6,
+            h4(textOutput("Estimate_HFnu")),
+            br(),
+            h4(textOutput("interval_HRV_HFnu")),
+            br(),
+            h4(textOutput("pvalue_HRV_HFnu"))
+          ),
+          column(
+            6,
+            h4(textOutput("Estimate_LFnu")),
+            br(),
+            h4(textOutput("interval_HRV_LFnu")),
+            br(),
+            h4(textOutput("pvalue_HRV_LFnu"))
           )
         )
       )
@@ -1501,7 +1660,8 @@ server <- function(input, output, session) {
           ggplot(data = data.frame(raw_data), aes(Time)) +
           geom_line(aes(y = RR, colour = "HR")) +
           geom_line(aes(y = SBP, colour = "SBP")) +
-          theme(axis.title.y = element_blank())
+          theme(axis.title.y = element_blank()) + 
+          coord_cartesian(xlim = input$side_time)
         raw_time <- raw_data[, "Time"]
         Time <- framework$Analyses[[chosen_analysis]]$Data[, "Time"]
         if (max(raw_time) != max(Time) | min(raw_time) != min(Time)) {
@@ -1586,8 +1746,9 @@ server <- function(input, output, session) {
             plotHF = TRUE,
             ratio = TRUE,
             newPlot = FALSE,
-            use.ggplot = TRUE
+            use.ggplot = TRUE,
           )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxLFHF_dwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1660,6 +1821,79 @@ server <- function(input, output, session) {
             newPlot = FALSE,
             use.ggplot = TRUE
           )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxHF_dwt)
+        if (input$interval_input != "No intervals have been set" |
+            input$control_input != "No control has been set") {
+          if (input$interval_input != "No intervals have been set") {
+            intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+            interval <- match(input$interval_input, intervals)
+            if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
+                (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
+              Results <- Results + annotate(
+                "rect",
+                fill = "red",
+                alpha = 0.5,
+                xmin =
+                  framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis] *
+                  60,
+                xmax = framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis] *
+                  60,
+                ymin = -Inf,
+                ymax = Inf
+              )
+            }
+          }
+          if (input$control_input != "No control has been set") {
+            intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+            interval <- match(input$control_input, intervals)
+            if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
+                (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
+              Results <- Results + annotate(
+                "rect",
+                fill = "blue",
+                alpha = 0.5,
+                xmin =
+                  framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis] *
+                  60,
+                xmax = framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis] *
+                  60,
+                ymin = -Inf,
+                ymax = Inf
+              )
+            }
+          }
+          return(Results)
+        } else {
+          return(Results)
+        }
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$hrv_HFnu <- renderPlot({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Results <-
+          PlotAnalyzedHRV(
+            framework,
+            chosen_analysis,
+            plotLF = FALSE,
+            plotHF = TRUE,
+            newPlot = FALSE,
+            use.ggplot = TRUE,
+            normalize = TRUE
+          )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxHFnu_dwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1733,6 +1967,79 @@ server <- function(input, output, session) {
             newPlot = FALSE,
             use.ggplot = TRUE
           )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxLF_dwt)
+        if (input$interval_input != "No intervals have been set" |
+            input$control_input != "No control has been set") {
+          if (input$interval_input != "No intervals have been set") {
+            intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+            interval <- match(input$interval_input, intervals)
+            if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
+                (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
+              Results <- Results + annotate(
+                "rect",
+                fill = "red",
+                alpha = 0.5,
+                xmin =
+                  framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis] *
+                  60,
+                xmax = framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis] *
+                  60,
+                ymin = -Inf,
+                ymax = Inf
+              )
+            }
+          }
+          if (input$control_input != "No control has been set") {
+            intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+            interval <- match(input$control_input, intervals)
+            if ((NROW(framework$IndividualIndices[[interval]]$Time_DWT[1, ]) > 0) &&
+                (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]))) {
+              Results <- Results + annotate(
+                "rect",
+                fill = "blue",
+                alpha = 0.5,
+                xmin =
+                  framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis] *
+                  60,
+                xmax = framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis] *
+                  60,
+                ymin = -Inf,
+                ymax = Inf
+              )
+            }
+          }
+          return(Results)
+        } else {
+          return(Results)
+        }
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$hrv_LFnu <- renderPlot({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Results <-
+          PlotAnalyzedHRV(
+            framework,
+            chosen_analysis,
+            plotHF = FALSE,
+            plotLF = TRUE,
+            newPlot = FALSE,
+            use.ggplot = TRUE,
+            normalize = TRUE
+          )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxLFnu_dwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1805,6 +2112,7 @@ server <- function(input, output, session) {
                           newPlot = FALSE,
                           plotLF = FALSE,
                           use.ggplot = TRUE)
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxHF_brs.dwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1880,7 +2188,7 @@ server <- function(input, output, session) {
             thr = input$coherence_val,
             use.ggplot = TRUE
           )
-        Results <- Results + ylim(-pi, pi)
+        Results <- Results + ylim(-pi, pi) + coord_cartesian(xlim = input$side_time)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -1952,6 +2260,7 @@ server <- function(input, output, session) {
                           newPlot = FALSE,
                           plotHF = FALSE,
                           use.ggplot = TRUE)
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxLF_brs.dwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -2027,6 +2336,7 @@ server <- function(input, output, session) {
             thr = input$coherence_val,
             use.ggplot = TRUE
           )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxHF_cwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -2101,6 +2411,7 @@ server <- function(input, output, session) {
             thr = input$coherence_val,
             use.ggplot = TRUE
           )
+        Results <- Results + coord_cartesian(xlim = input$side_time, ylim = input$side_maxLF_cwt)
         if (input$interval_input != "No intervals have been set" |
             input$control_input != "No control has been set") {
           if (input$interval_input != "No intervals have been set") {
@@ -2684,6 +2995,50 @@ server <- function(input, output, session) {
     })
   })
   
+  output$Estimate_HFnu <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          !is.null(input$brush_raw)) {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2,]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Data <- framework$"General Data"
+        Analysis <- framework$Analyses[[chosen_analysis]]
+        hrv <- Analysis$HRV
+        hrv$HF <- hrv$HFnu
+        hrv$LF <- hrv$LFnu
+        hrv$Time <- Analysis$Data[, 1]
+        hrv$type <- "brs_dwt"
+        indices <-
+          IndividualIndices(
+            hrv,
+            c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
+            use.coherence = Data$Threshold,
+            thr = Data$Coherence,
+            method = Data$"Index Method"
+          )
+        paste(
+          "Estimate at HF band between",
+          round(
+            ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
+            3
+          ),
+          "and",
+          round(input$brush_raw$xmax / 60, 3),
+          "min:",
+          round(indices[1,1], 3),
+          "n.u."
+        )
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
   
   output$interval_HRV_HF <- renderText({
     tryCatch({
@@ -2719,6 +3074,43 @@ server <- function(input, output, session) {
                        duration = NULL)
     })
   })
+  
+  
+  output$interval_HRV_HFnu <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          input$interval_input != "No intervals have been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+          hrv <-
+            framework$IndividualIndices[[interval]]$HRV[, chosen_analysis]
+          hrv <- hrv[4]
+          limits <-
+            framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+          paste(
+            "LF estimate at chosen interval from ",
+            round(limits[1], 3),
+            "to",
+            round(limits[2], 3),
+            "min:",
+            round(hrv, 3),
+            "ms2"
+          )
+        }
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
   
   output$Estimate_LF <- renderText({
     tryCatch({
@@ -2761,6 +3153,48 @@ server <- function(input, output, session) {
     })
   })
   
+  output$Estimate_LFnu <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          !is.null(input$brush_raw)) {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2,]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Data <- framework$"General Data"
+        Analysis <- framework$Analyses[[chosen_analysis]]
+        hrv <- Analysis$HRV
+        hrv$HF <- hrv$HFnu
+        hrv$LF <- hrv$LFnu
+        hrv$Time <- Analysis$Data[, 1]
+        hrv$type <- "brs_dwt"
+        indices <-
+          IndividualIndices(
+            hrv,
+            c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
+            use.coherence = Data$Threshold,
+            thr = Data$Coherence
+          )
+        paste(
+          "Estimate at LF band between",
+          round(
+            ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
+            3
+          ),
+          "and",
+          round(input$brush_raw$xmax / 60, 3),
+          "min:",
+          round(indices[1,2], 3),
+          "n.u."
+        )
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
   
   output$interval_HRV_LF <- renderText({
     tryCatch({
@@ -2777,6 +3211,41 @@ server <- function(input, output, session) {
           hrv <-
             framework$IndividualIndices[[interval]]$HRV[, chosen_analysis]
           hrv <- hrv[2]
+          limits <-
+            framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
+          paste(
+            "LF estimate at chosen interval from ",
+            round(limits[1], 3),
+            "to",
+            round(limits[2], 3),
+            "min:",
+            round(hrv, 3),
+            "ms2"
+          )
+        }
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$interval_HRV_LFnu <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          input$interval_input != "No intervals have been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis])) {
+          hrv <-
+            framework$IndividualIndices[[interval]]$HRV[, chosen_analysis]
+          hrv <- hrv[5]
           limits <-
             framework$IndividualIndices[[interval]]$Time_DWT[, chosen_analysis]
           paste(
@@ -3271,6 +3740,76 @@ server <- function(input, output, session) {
     })
   })
   
+  output$pvalue_HRV_LFnu <- renderText({
+    tryCatch({
+      if (input$interval_input != "No intervals have been set" &
+          input$control_input != "No control has been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        control <- match(input$control_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]) &
+            !is.na(framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis])) {
+          Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+          hrv <- list()
+          hrv$HRV <- framework$Analyses[[chosen_analysis]]$HRV
+          hrv$HF <- hrv$HFnu
+          hrv$LF <- hrv$LFnu
+          hrv$Time <- Data$Data[, 1]
+          time_flags1 <-
+            c(
+              framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis]
+            )
+          time_flags2 <-
+            c(
+              framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
+            )
+          evaluation <-
+            TestIndHRV(hrv, time_flags1, time_flags2)
+          sig <-
+            ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+          if (evaluation[2] <= 0.001) {
+            code <- "***"
+          } else if (evaluation[2] <= 0.01) {
+            code <- "**"
+          } else if (evaluation[2] <= 0.05) {
+            code <- "*"
+          } else {
+            code <- "ns"
+          }
+          text <-
+            paste(
+              sig,
+              " difference in estimates between interval ",
+              input$control_input,
+              " (set as control) and
+                      interval ",
+              input$interval_input,
+              ", with a p value of ",
+              round(evaluation[2], 4),
+              " (",
+              code ,
+              ")",
+              sep = ""
+            )
+          return(text)
+        }
+        
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
   output$pvalue_HRV_HF <- renderText({
     tryCatch({
       if (input$interval_input != "No intervals have been set" &
@@ -3288,6 +3827,76 @@ server <- function(input, output, session) {
           Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
           hrv <- list()
           hrv$HRV <- framework$Analyses[[chosen_analysis]]$HRV
+          hrv$Time <- Data$Data[, 1]
+          time_flags1 <-
+            c(
+              framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis]
+            )
+          time_flags2 <-
+            c(
+              framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
+            )
+          evaluation <-
+            TestIndHRV(hrv, time_flags1, time_flags2)
+          sig <-
+            ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+          if (evaluation[1] <= 0.001) {
+            code <- "***"
+          } else if (evaluation[1] <= 0.01) {
+            code <- "**"
+          } else if (evaluation[1] <= 0.05) {
+            code <- "*"
+          } else {
+            code <- "ns"
+          }
+          text <-
+            paste(
+              sig,
+              " difference in estimates between interval ",
+              input$control_input,
+              " (set as control) and
+                      interval ",
+              input$interval_input,
+              ", with a p value of ",
+              round(evaluation[1], 4),
+              " (",
+              code ,
+              ")",
+              sep = ""
+            )
+          return(text)
+        }
+        
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$pvalue_HRV_HFnu <- renderText({
+    tryCatch({
+      if (input$interval_input != "No intervals have been set" &
+          input$control_input != "No control has been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        control <- match(input$control_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]) &
+            !is.na(framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis])) {
+          Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+          hrv <- list()
+          hrv$HRV <- framework$Analyses[[chosen_analysis]]$HRV
+          hrv$HF <- hrv$HFnu
+          hrv$LF <- hrv$LFnu
           hrv$Time <- Data$Data[, 1]
           time_flags1 <-
             c(
@@ -3850,6 +4459,38 @@ server <- function(input, output, session) {
       q(save = "no")
   })
   #############################################################################################
+  ############### 19. UPDATE SIDEBARS ########################################################
+  
+  observeEvent(input$subject_input != "No subjects have been loaded", {
+    tryCatch({
+      if(input$subject_input != "No subjects have been loaded"){
+    framework <- isolate(database$framework)
+    analysis_choices <-
+      ShowLocatorIndices(framework, "analyses")[2, ]
+    chosen_analysis <-
+      match(input$subject_input, analysis_choices)
+    chosen_for_update <- framework$Analyses[[chosen_analysis]]
+    side_lim_time <- c(min(chosen_for_update$Data[,"Time"]), max(chosen_for_update$Data[,"Time"]), 
+                       diff(chosen_for_update$Data[,"Time"])[1])
+    max_brs_dwt <- round(max(max(chosen_for_update$BRS$DWT$HF), max(chosen_for_update$BRS$DWT$LF))) + 5
+    max_brs_cwt <- round(max(max(chosen_for_update$BRS$AvgCWT$HF), max(chosen_for_update$BRS$AvgCWT$LF))) + 5
+    max_dwt <- round(max(max(chosen_for_update$HRV$HF), max(chosen_for_update$HRV$LF))) + 10
+    max_lfhf <- round(max(chosen_for_update$HRV$LFHF)) + 10
+    updateSliderInput(inputId = "side_time", value = side_lim_time[-3], max = side_lim_time[2], step = side_lim_time[3])
+    updateSliderInput(inputId = "side_maxHF_brs.dwt", value = c(0,max_brs_dwt), max = max_brs_dwt, step = 1)
+    updateSliderInput(inputId = "side_maxLF_brs.dwt", value = c(0,max_brs_dwt), max = max_brs_dwt, step = 1)
+    updateSliderInput(inputId = "side_maxHF_dwt", value = c(0,max_dwt), max = max_dwt, step = 1)
+    updateSliderInput(inputId = "side_maxLF_dwt", value = c(0,max_dwt), max = max_dwt, step = 1)
+    updateSliderInput(inputId = "side_maxLFHF_dwt", value = c(0,max_lfhf), max = max_lfhf, step = 1)
+    updateSliderInput(inputId = "side_maxHF_cwt", value = c(0,max_brs_cwt), max = max_brs_cwt, step = 1)
+    updateSliderInput(inputId = "side_maxLF_cwt", value = c(0,max_brs_cwt), max = max_brs_cwt, step = 1)
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
   
 }
 
