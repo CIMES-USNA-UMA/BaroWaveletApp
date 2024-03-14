@@ -4314,7 +4314,7 @@ server <- function(input, output, session) {
           }
           text <-
             paste(
-              "Non interpolated HR: ",
+              "Non-interpolated HR: ",
               sig,
               " difference in estimates between interval ",
               input$control_input,
@@ -4381,7 +4381,7 @@ server <- function(input, output, session) {
           }
           text <-
             paste(
-              "Non interpolated SBP: ",
+              "Non-interpolated SBP: ",
               sig,
               " difference in estimates between interval ",
               input$control_input,
