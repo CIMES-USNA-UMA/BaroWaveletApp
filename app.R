@@ -483,7 +483,9 @@ ui <- fluidPage(
         tags$hr(),
         br(),
         br(),
-        h3("Baroreflex Sensitivity (DWT)"),
+        br(),
+        br(),
+        fluidRow(column(12, h3("Baroreflex Sensitivity (DWT)"))),
         tags$hr(),
         br(),
         fluidRow(column(6,
@@ -4288,7 +4290,7 @@ server <- function(input, output, session) {
         if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]) &
             !is.na(framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis])) {
           Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
-          raw_data <- framework$Analyses[[chosen_analysis]]$Data
+          raw_data <- framework$Raw[[chosen_analysis]]$Data
           time_flags1 <-
             c(
               framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis],
