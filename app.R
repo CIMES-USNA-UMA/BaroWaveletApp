@@ -1146,7 +1146,8 @@ server <- function(input, output, session) {
             time = niSim$Time,
             RR = niSim$RR,
             SBP = niSim$SBP,
-            raw = TRUE
+            raw = TRUE,
+            interpolate = FALSE
           )
         framework <- AnalyzeBRS(framework, length(framework$Analyses))
         framework <-
@@ -1542,7 +1543,8 @@ server <- function(input, output, session) {
                            time = nidata$Time,
                            RR = nidata$RR,
                            SBP = nidata$SBP,
-                           raw = TRUE
+                           raw = TRUE,
+                           interpolate = FALSE
                          )
                        framework <-
                          AnalyzeBRS(framework, length(framework$Analyses))
