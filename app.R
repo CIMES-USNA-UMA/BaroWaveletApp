@@ -323,20 +323,37 @@ ui <- fluidPage(
       ),
       fluidRow(column(6,
                       h4(
-                        textOutput("Estimate_HR")
+                        textOutput("Estimate_HRni")
                       ),
                       br(),
                       h4(
-                        textOutput("pvalue_HR")
+                        textOutput("pvalue_HRni")
                       )),
                column(6,
                       h4(
-                        textOutput("Estimate_SBP")
+                        textOutput("Estimate_SBPni")
                       ),
                       br(),
                       h4(
-                        textOutput("pvalue_SBP")
+                        textOutput("pvalue_SBPni")
                       ))),
+     tags$hr(),
+     fluidRow(column(6,
+                     h4(
+                       textOutput("Estimate_HR")
+                     ),
+                     br(),
+                     h4(
+                       textOutput("pvalue_HR")
+                     )),
+              column(6,
+                     h4(
+                       textOutput("Estimate_SBP")
+                     ),
+                     br(),
+                     h4(
+                       textOutput("pvalue_SBP")
+                     ))),
       br(),
       fluidRow(
         column(
@@ -1111,7 +1128,8 @@ server <- function(input, output, session) {
                "median", "mean")
       # Allow usage of simulation
       if (framework$Name == "Simulation") {
-        Sim <- InterpolateData(DataSimulation(), f = input$int_freq)
+        niSim <- DataSimulation()
+        Sim <- InterpolateData(niSim, f = input$int_freq)
         framework <- AddAnalysis(framework, name = "Simulation")
         framework <-
           AddDataToAnalysis(
@@ -1120,6 +1138,15 @@ server <- function(input, output, session) {
             time = Sim$Time,
             RR = Sim$RR,
             SBP = Sim$SBP
+          )
+        framework <-
+          AddDataToAnalysis(
+            framework,
+            length(framework$Analyses),
+            time = niSim$Time,
+            RR = niSim$RR,
+            SBP = niSim$SBP,
+            raw = TRUE
           )
         framework <- AnalyzeBRS(framework, length(framework$Analyses))
         framework <-
@@ -1491,9 +1518,11 @@ server <- function(input, output, session) {
                        }
                        if (input$preprocessing == "Interpolate") {
                          #data <- PreprocessData(data, use.RHRV = FALSE)
+                         nidata <- data
                          data <- InterpolateData(data, input$int_freq)
                        } else if (input$preprocessing == "Filter with RHRV and Interpolate") {
                          data <- PreprocessData(data, use.RHRV = TRUE)
+                         nidata <- data
                          data <- InterpolateData(data, input$int_freq)
                        }
                        framework <-
@@ -1505,6 +1534,15 @@ server <- function(input, output, session) {
                            time = data$Time,
                            RR = data$RR,
                            SBP = data$SBP
+                         )
+                       framework <-
+                         AddDataToAnalysis(
+                           framework,
+                           length(framework$Analyses),
+                           time = nidata$Time,
+                           RR = nidata$RR,
+                           SBP = nidata$SBP,
+                           raw = TRUE
                          )
                        framework <-
                          AnalyzeBRS(framework, length(framework$Analyses))
@@ -3323,7 +3361,7 @@ server <- function(input, output, session) {
         method <- ifelse(method == "mean", mean, median)
         HR <- method(fun$HR[select_time])
         paste(
-          "HR between",
+          "Interpolated HR between",
           round(
             ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
             3
@@ -3365,7 +3403,7 @@ server <- function(input, output, session) {
         method <- ifelse(method == "mean", mean, median)
         SBP <- method(fun$SBP[select_time])
         paste(
-          "SBP between",
+          "Interpolated SBP between",
           round(
             ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
             3
@@ -3384,6 +3422,89 @@ server <- function(input, output, session) {
     })
   })
   
+  output$Estimate_HRni <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          !is.null(input$brush_raw)) {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2,]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Data <- framework$"General Data"
+        Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+        raw <- framework$Raw[[chosen_analysis]]$Data
+        fun <-
+          list(Time = raw[, "Time"],
+               HR = 60000 / raw[, "RR"],
+               SBP = raw[, "SBP"])
+        select_time <- fun$Time[(fun$Time >= input$brush_raw$xmin) &
+                                  (fun$Time <= input$brush_raw$xmax)]
+        select_time <- match(select_time, fun$Time)
+        method <- Data$"Index Method"
+        method <- ifelse(method == "mean", mean, median)
+        HR <- method(fun$HR[select_time])
+        paste(
+          "Non interpolated HR between",
+          round(
+            ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
+            3
+          ),
+          "and",
+          round(input$brush_raw$xmax / 60, 3),
+          "min:",
+          round(HR, 3),
+          "bpm"
+        )
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$Estimate_SBPni <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          !is.null(input$brush_raw)) {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2,]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Data <- framework$"General Data"
+        Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+        raw <- framework$Raw[[chosen_analysis]]$Data
+        fun <-
+          list(Time = raw[, "Time"],
+               HR = 60000 / raw[, "RR"],
+               SBP = raw[, "SBP"])
+        select_time <- fun$Time[(fun$Time >= input$brush_raw$xmin) &
+                                  (fun$Time <= input$brush_raw$xmax)]
+        select_time <- match(select_time, fun$Time)
+        method <- Data$"Index Method"
+        method <- ifelse(method == "mean", mean, median)
+        SBP <- method(fun$SBP[select_time])
+        paste(
+          "Non interpolated SBP between",
+          round(
+            ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
+            3
+          ),
+          "and",
+          round(input$brush_raw$xmax / 60, 3),
+          "min:",
+          round(SBP, 3),
+          "mmHg"
+        )
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
   
   
   ###################################################################################################
@@ -4057,7 +4178,7 @@ server <- function(input, output, session) {
           }
           text <-
             paste(
-              "HR: ",
+              "Interpolated HR: ",
               sig,
               " difference in estimates between interval ",
               input$control_input,
@@ -4124,7 +4245,141 @@ server <- function(input, output, session) {
           }
           text <-
             paste(
-              "SBP: ",
+              "Interpolated SBP: ",
+              sig,
+              " difference in estimates between interval ",
+              input$control_input,
+              " (set as control) and
+                      interval ",
+              input$interval_input,
+              ", with a p value of ",
+              round(evaluation[2], 4),
+              " (",
+              code ,
+              ")",
+              sep = ""
+            )
+          return(text)
+        }
+        
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$pvalue_HRni <- renderText({
+    tryCatch({
+      if (input$interval_input != "No intervals have been set" &
+          input$control_input != "No control has been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        control <- match(input$control_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]) &
+            !is.na(framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis])) {
+          Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+          raw_data <- framework$Analyses[[chosen_analysis]]$Data
+          time_flags1 <-
+            c(
+              framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis]
+            )
+          time_flags2 <-
+            c(
+              framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
+            )
+          evaluation <-
+            TestIndHRandBP(raw_data, time_flags1, time_flags2)
+          sig <-
+            ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
+          if (evaluation[1] <= 0.001) {
+            code <- "***"
+          } else if (evaluation[1] <= 0.01) {
+            code <- "**"
+          } else if (evaluation[1] <= 0.05) {
+            code <- "*"
+          } else {
+            code <- "ns"
+          }
+          text <-
+            paste(
+              "Non interpolated HR: ",
+              sig,
+              " difference in estimates between interval ",
+              input$control_input,
+              " (set as control) and
+                      interval ",
+              input$interval_input,
+              ", with a p value of ",
+              round(evaluation[1], 4),
+              " (",
+              code ,
+              ")",
+              sep = ""
+            )
+          return(text)
+        }
+        
+      }
+      
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
+  
+  output$pvalue_SBPni <- renderText({
+    tryCatch({
+      if (input$interval_input != "No intervals have been set" &
+          input$control_input != "No control has been set") {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2, ]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        intervals <- ShowLocatorIndices(framework, "intervals")[2, ]
+        interval <- match(input$interval_input, intervals)
+        control <- match(input$control_input, intervals)
+        if (!is.na(framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis]) &
+            !is.na(framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis])) {
+          Data <- ExtractDataFromAnalysis(framework, chosen_analysis)
+          raw_data <- framework$Raw[[chosen_analysis]]$Data
+          time_flags1 <-
+            c(
+              framework$IndividualIndices[[interval]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[interval]]$Time_DWT[2, chosen_analysis]
+            )
+          time_flags2 <-
+            c(
+              framework$IndividualIndices[[control]]$Time_DWT[1, chosen_analysis],
+              framework$IndividualIndices[[control]]$Time_DWT[2, chosen_analysis]
+            )
+          evaluation <-
+            TestIndHRandBP(raw_data, time_flags1, time_flags2)
+          sig <-
+            ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
+          if (evaluation[2] <= 0.001) {
+            code <- "***"
+          } else if (evaluation[2] <= 0.01) {
+            code <- "**"
+          } else if (evaluation[2] <= 0.05) {
+            code <- "*"
+          } else {
+            code <- "ns"
+          }
+          text <-
+            paste(
+              "Non interpolated SBP: ",
               sig,
               " difference in estimates between interval ",
               input$control_input,
