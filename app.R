@@ -327,7 +327,7 @@ ui <- fluidPage(
                       ),
                       br(),
                       h4(
-                        textOutput("pvalue_HRni")
+                        textOutput("Estimate_HR")
                       )),
                column(6,
                       h4(
@@ -335,12 +335,12 @@ ui <- fluidPage(
                       ),
                       br(),
                       h4(
-                        textOutput("pvalue_SBPni")
+                        textOutput("Estimate_SBP")
                       ))),
      tags$hr(),
      fluidRow(column(6,
                      h4(
-                       textOutput("Estimate_HR")
+                       textOutput("pvalue_HRni")
                      ),
                      br(),
                      h4(
@@ -348,7 +348,7 @@ ui <- fluidPage(
                      )),
               column(6,
                      h4(
-                       textOutput("Estimate_SBP")
+                       textOutput("pvalue_SBPni")
                      ),
                      br(),
                      h4(
@@ -3447,7 +3447,7 @@ server <- function(input, output, session) {
         method <- ifelse(method == "mean", mean, median)
         HR <- method(fun$HR[select_time])
         paste(
-          "Non interpolated HR between",
+          "Non-interpolated HR between",
           round(
             ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
             3
@@ -3489,7 +3489,7 @@ server <- function(input, output, session) {
         method <- ifelse(method == "mean", mean, median)
         SBP <- method(fun$SBP[select_time])
         paste(
-          "Non interpolated SBP between",
+          "Non-interpolated SBP between",
           round(
             ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
             3
