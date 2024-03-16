@@ -295,7 +295,7 @@ ui <- fluidPage(
      #  br(),
      #         p(
      #           "To add data to a specific interval, first choose the interval of interest. Then, either
-     #           stablish the numeric imputs that define the minimum and maximum time limits of said interval,
+     #           establish the numeric inputs that define the minimum and maximum time limits of said interval,
      #           or drag the mouse on the graphs and double click on the selected area.",
      #           style = "text-align:justify;color:black;background:white;padding:15px;border-radius:10px"
      #         ),
@@ -318,7 +318,8 @@ ui <- fluidPage(
       wellPanel(
         style = "background:white",
         plotOutput("Raw", 
-                   brush = "brush_raw", 
+                   brush = brushOpts(id = "brush_raw",
+                                     resetOnNew = TRUE),
                    dblclick = "dbc_raw")
       ),
       fluidRow(column(6,
@@ -398,19 +399,17 @@ ui <- fluidPage(
                         6,
                         plotOutput(
                           "Analyzed_brs_Plot1_cwt",
-                          brush = brushOpts(id = "Analyzed_brs_brush1",
-                                            resetOnNew = TRUE),
-                          dblclick = "Analyzed_brs_dbc1"
-                        )
+                          brush = brushOpts(id = "brush_raw",
+                                                     resetOnNew = TRUE),
+                          dblclick = "dbc_raw")
                       ),
                       column(
                         6,
                         plotOutput(
                           "Analyzed_brs_Plot2_cwt",
-                          brush = brushOpts(id = "Analyzed_brs_brush1",
+                          brush = brushOpts(id = "brush_raw",
                                             resetOnNew = TRUE),
-                          dblclick = "Analyzed_brs_dbc1"
-                        )
+                          dblclick = "dbc_raw")
                       )
                     )),
                     fluidRow(
@@ -446,19 +445,17 @@ ui <- fluidPage(
                         6,
                         plotOutput(
                           "phase1_cwt",
-                          brush = brushOpts(id = "Analyzed_brs_brush1",
+                          brush = brushOpts(id = "brush_raw",
                                             resetOnNew = TRUE),
-                          dblclick = "Analyzed_brs_dbc1"
-                        )
+                          dblclick = "dbc_raw")
                       ),
                       column(
                         6,
                         plotOutput(
                           "phase2_cwt",
-                          brush = brushOpts(id = "Analyzed_brs_brush1",
+                          brush = brushOpts(id = "brush_raw",
                                             resetOnNew = TRUE),
-                          dblclick = "Analyzed_brs_dbc1"
-                        )
+                          dblclick = "dbc_raw")
                       )
                     ))
         ),
@@ -505,19 +502,17 @@ ui <- fluidPage(
                       6,
                       plotOutput(
                         "Analyzed_brs_Plot1",
-                        brush = brushOpts(id = "Analyzed_brs_brush1",
+                        brush = brushOpts(id = "brush_raw",
                                           resetOnNew = TRUE),
-                        dblclick = "Analyzed_brs_dbc1"
-                      )
+                        dblclick = "dbc_raw")
                     ),
                     column(
                       6,
                       plotOutput(
                         "Analyzed_brs_Plot2",
-                        brush = brushOpts(id = "Analyzed_brs_brush1",
+                        brush = brushOpts(id = "brush_raw",
                                           resetOnNew = TRUE),
-                        dblclick = "Analyzed_brs_dbc1"
-                      )
+                        dblclick = "dbc_raw")
                     )
                   )),
                   fluidRow(
@@ -584,12 +579,14 @@ ui <- fluidPage(
         wellPanel(
           style = "background:white",
           plotOutput("hrv_LFHF", 
-                     brush = "brush_raw", 
-                     dblclick = "dbc_raw"
-                     )
+                     brush = brushOpts(id = "brush_raw",
+                                       resetOnNew = TRUE),
+                     dblclick = "dbc_raw")
         ),
         fluidRow(column(
           12,
+          h4(textOutput("Estimate_LFHF")),
+          br(),
           h4(textOutput("interval_HRV_LFHF")),
           br(),
           h4(textOutput("pvalue_HRV_LFHF"))
@@ -632,17 +629,17 @@ ui <- fluidPage(
                       6,
                       br(),
                       plotOutput("hrv_HF", 
-                                 brush = "brush_raw", 
-                                 dblclick = "dbc_raw"
-                                 )
+                                 brush = brushOpts(id = "brush_raw",
+                                                   resetOnNew = TRUE),
+                                 dblclick = "dbc_raw")
                     ),
                     column(
                       6,
                       br(),
                       plotOutput("hrv_LF", 
-                                 brush = "brush_raw",
-                                 dblclick = "dbc_raw"
-                                 )
+                                 brush = brushOpts(id = "brush_raw",
+                                                   resetOnNew = TRUE),
+                                 dblclick = "dbc_raw")
                     )
                   )),
         fluidRow(
@@ -694,17 +691,17 @@ ui <- fluidPage(
                       6,
                       br(),
                       plotOutput("hrv_HFnu", 
-                                 brush = "brush_raw", 
-                                 dblclick = "dbc_raw"
-                      )
+                                 brush = brushOpts(id = "brush_raw",
+                                                   resetOnNew = TRUE),
+                                 dblclick = "dbc_raw")
                     ),
                     column(
                       6,
                       br(),
                       plotOutput("hrv_LFnu", 
-                                 brush = "brush_raw",
-                                 dblclick = "dbc_raw"
-                      )
+                                 brush = brushOpts(id = "brush_raw",
+                                                   resetOnNew = TRUE),
+                                 dblclick = "dbc_raw")
                     )
                   )),
         fluidRow(
@@ -862,6 +859,15 @@ ui <- fluidPage(
         style = "text-align:justify;color:black"
       ),
       br(),
+      h3("Simulation mode"),
+      br(),
+      p(
+        "A simulation mode is available in this tool. To access the simulation mode, go to the Study Settings section and change
+        the name of the study to Simulation, then press the Change Framework Settings button. The simulated signals are generated
+        using de Boer and Karemaker's procedure [4], and show five intervals with specific baroreflex behaviors (more information 
+        regarding these intervals is available in the BaroWavelet publication).",
+        style = "text-align:justify;color:black"
+      ),
       tags$hr(),
       h3("References"),
       br(),
@@ -878,6 +884,12 @@ ui <- fluidPage(
       p(
         "3. R Core Team (2023). R: A Language and Environment for Statistical Computing. R Foundation for
   Statistical Computing, Vienna, Austria. <https://www.R-project.org/.>",
+        style = "text-align:justify;color:black;padding:15px;border-radius:10px"
+      ),
+      p(
+        "4. de Boer RW, Karemaker JM. Cross-Wavelet Time-Frequency Analysis Reveals Sympathetic 
+         Contribution to Baroreflex Sensitivity as Cause of Variable Phase Delay Between Blood 
+         Pressure and Heart Rate. Front Neurosci. 2019 Jul 9;13:694.",
         style = "text-align:justify;color:black;padding:15px;border-radius:10px"
       )
     )
@@ -2617,7 +2629,7 @@ server <- function(input, output, session) {
   output$DWT_Estimate_HF <- renderText({
     tryCatch({
       if (input$subject_input != "No subjects have been loaded" &
-          !is.null(input$Analyzed_brs_brush1)) {
+          !is.null(input$brush_raw)) {
         framework <- isolate(database$framework)
         analysis_choices <-
           ShowLocatorIndices(framework, "analyses")[2,]
@@ -2632,8 +2644,8 @@ server <- function(input, output, session) {
           IndividualIndices(
             brs,
             c(
-              input$Analyzed_brs_brush1$xmin / 60,
-              input$Analyzed_brs_brush1$xmax / 60
+              input$brush_raw$xmin / 60,
+              input$brush_raw$xmax / 60
             ),
             use.coherence = Data$Threshold,
             thr = Data$Coherence,
@@ -2643,14 +2655,14 @@ server <- function(input, output, session) {
           "Estimate at HF band between",
           round(
             ifelse(
-              input$Analyzed_brs_brush1$xmin > 0,
-              input$Analyzed_brs_brush1$xmin / 60,
+              input$brush_raw$xmin > 0,
+              input$brush_raw$xmin / 60,
               0
             ),
             3
           ),
           "and",
-          round(input$Analyzed_brs_brush1$xmax / 60, 3),
+          round(input$brush_raw$xmax / 60, 3),
           "min:",
           round(indices[1, 1], 3),
           "ms/mmHg"
@@ -2702,7 +2714,7 @@ server <- function(input, output, session) {
   output$CWT_Estimate_HF <- renderText({
     tryCatch({
       if (input$subject_input != "No subjects have been loaded" &
-          !is.null(input$Analyzed_brs_brush1)) {
+          !is.null(input$brush_raw)) {
         framework <- isolate(database$framework)
         analysis_choices <-
           ShowLocatorIndices(framework, "analyses")[2,]
@@ -2718,8 +2730,8 @@ server <- function(input, output, session) {
           IndividualIndices(
             brs,
             c(
-              input$Analyzed_brs_brush1$xmin / 60,
-              input$Analyzed_brs_brush1$xmax / 60
+              input$brush_raw$xmin / 60,
+              input$brush_raw$xmax / 60
             ),
             use.coherence = Data$Threshold,
             thr = Data$Coherence,
@@ -2729,14 +2741,14 @@ server <- function(input, output, session) {
           "Estimate at HF band between",
           round(
             ifelse(
-              input$Analyzed_brs_brush1$xmin > 0,
-              input$Analyzed_brs_brush1$xmin / 60,
+              input$brush_raw$xmin > 0,
+              input$brush_raw$xmin / 60,
               0
             ),
             3
           ),
           "and",
-          round(input$Analyzed_brs_brush1$xmax / 60, 3),
+          round(input$brush_raw$xmax / 60, 3),
           "min:",
           round(indices[1, 1], 3),
           "ms/mmHg"
@@ -2786,7 +2798,7 @@ server <- function(input, output, session) {
   output$DWT_Estimate_LF <- renderText({
     tryCatch({
       if (input$subject_input != "No subjects have been loaded" &
-          !is.null(input$Analyzed_brs_brush1)) {
+          !is.null(input$brush_raw)) {
         framework <- isolate(database$framework)
         analysis_choices <-
           ShowLocatorIndices(framework, "analyses")[2,]
@@ -2801,8 +2813,8 @@ server <- function(input, output, session) {
           IndividualIndices(
             brs,
             c(
-              input$Analyzed_brs_brush1$xmin / 60,
-              input$Analyzed_brs_brush1$xmax / 60
+              input$brush_raw$xmin / 60,
+              input$brush_raw$xmax / 60
             ),
             use.coherence = Data$Threshold,
             thr = Data$Coherence
@@ -2811,14 +2823,14 @@ server <- function(input, output, session) {
           "Estimate at LF band between",
           round(
             ifelse(
-              input$Analyzed_brs_brush1$xmin > 0,
-              input$Analyzed_brs_brush1$xmin / 60,
+              input$brush_raw$xmin > 0,
+              input$brush_raw$xmin / 60,
               0
             ),
             3
           ),
           "and",
-          round(input$Analyzed_brs_brush1$xmax / 60, 3),
+          round(input$brush_raw$xmax / 60, 3),
           "min:",
           round(indices[1, 2], 3),
           "ms/mmHg"
@@ -2868,7 +2880,7 @@ server <- function(input, output, session) {
   output$CWT_Estimate_LF <- renderText({
     tryCatch({
       if (input$subject_input != "No subjects have been loaded" &
-          !is.null(input$Analyzed_brs_brush1)) {
+          !is.null(input$brush_raw)) {
         framework <- isolate(database$framework)
         analysis_choices <-
           ShowLocatorIndices(framework, "analyses")[2,]
@@ -2887,8 +2899,8 @@ server <- function(input, output, session) {
           IndividualIndices(
             brs,
             c(
-              input$Analyzed_brs_brush1$xmin / 60,
-              input$Analyzed_brs_brush1$xmax / 60
+              input$brush_raw$xmin / 60,
+              input$brush_raw$xmax / 60
             ),
             use.coherence = Data$Threshold,
             thr = Data$Coherence,
@@ -2898,14 +2910,14 @@ server <- function(input, output, session) {
           "Estimate at LF band between",
           round(
             ifelse(
-              input$Analyzed_brs_brush1$xmin > 0,
-              input$Analyzed_brs_brush1$xmin / 60,
+              input$brush_raw$xmin > 0,
+              input$brush_raw$xmin / 60,
               0
             ),
             3
           ),
           "and",
-          round(input$Analyzed_brs_brush1$xmax / 60, 3),
+          round(input$brush_raw$xmax / 60, 3),
           "min:",
           round(indices[1, 2], 3),
           "ms/mmHg"
@@ -3100,7 +3112,7 @@ server <- function(input, output, session) {
             round(limits[2], 3),
             "min:",
             round(hrv, 3),
-            "ms2"
+            "n.u."
           )
         }
       }
@@ -3255,7 +3267,7 @@ server <- function(input, output, session) {
             round(limits[2], 3),
             "min:",
             round(hrv, 3),
-            "ms2"
+            "n.u."
           )
         }
       }
@@ -3266,6 +3278,48 @@ server <- function(input, output, session) {
     })
   })
   
+  output$Estimate_LFHF <- renderText({
+    tryCatch({
+      if (input$subject_input != "No subjects have been loaded" &
+          !is.null(input$brush_raw)) {
+        framework <- isolate(database$framework)
+        analysis_choices <-
+          ShowLocatorIndices(framework, "analyses")[2,]
+        chosen_analysis <-
+          match(input$subject_input, analysis_choices)
+        Data <- framework$"General Data"
+        Analysis <- framework$Analyses[[chosen_analysis]]
+        hrv <- Analysis$HRV
+        hrv$HF <- hrv$LFHF
+        hrv$LF <- hrv$LFHF
+        hrv$Time <- Analysis$Data[, 1]
+        hrv$type <- "brs_dwt"
+        indices <-
+          IndividualIndices(
+            hrv,
+            c(input$brush_raw$xmin / 60, input$brush_raw$xmax / 60),
+            use.coherence = Data$Threshold,
+            thr = Data$Coherence
+          )
+        paste(
+          "LF/HF ratio estimate between",
+          round(
+            ifelse(input$brush_raw$xmin > 0,  input$brush_raw$xmin / 60, 0),
+            3
+          ),
+          "and",
+          round(input$brush_raw$xmax / 60, 3),
+          "min:",
+          round(indices[1,1], 3),
+          "ms2"
+        )
+      }
+    }, error = function(barowavelet_error) {
+      showNotification(as.character(barowavelet_error),
+                       type = "error",
+                       duration = NULL)
+    })
+  })
   
   output$interval_HRV_LFHF <- renderText({
     tryCatch({
@@ -3773,12 +3827,12 @@ server <- function(input, output, session) {
           evaluation <-
             TestIndHRV(hrv, time_flags1, time_flags2)
           sig <-
-            ifelse(evaluation[2] <= 0.05, "Significant", "No significant")
-          if (evaluation[2] <= 0.001) {
+            ifelse(evaluation[5] <= 0.05, "Significant", "No significant")
+          if (evaluation[5] <= 0.001) {
             code <- "***"
-          } else if (evaluation[2] <= 0.01) {
+          } else if (evaluation[5] <= 0.01) {
             code <- "**"
-          } else if (evaluation[2] <= 0.05) {
+          } else if (evaluation[5] <= 0.05) {
             code <- "*"
           } else {
             code <- "ns"
@@ -3792,7 +3846,7 @@ server <- function(input, output, session) {
                       interval ",
               input$interval_input,
               ", with a p value of ",
-              round(evaluation[2], 4),
+              round(evaluation[5], 4),
               " (",
               code ,
               ")",
@@ -3911,12 +3965,12 @@ server <- function(input, output, session) {
           evaluation <-
             TestIndHRV(hrv, time_flags1, time_flags2)
           sig <-
-            ifelse(evaluation[1] <= 0.05, "Significant", "No significant")
-          if (evaluation[1] <= 0.001) {
+            ifelse(evaluation[4] <= 0.05, "Significant", "No significant")
+          if (evaluation[4] <= 0.001) {
             code <- "***"
-          } else if (evaluation[1] <= 0.01) {
+          } else if (evaluation[4] <= 0.01) {
             code <- "**"
-          } else if (evaluation[1] <= 0.05) {
+          } else if (evaluation[4] <= 0.05) {
             code <- "*"
           } else {
             code <- "ns"
@@ -3930,7 +3984,7 @@ server <- function(input, output, session) {
                       interval ",
               input$interval_input,
               ", with a p value of ",
-              round(evaluation[1], 4),
+              round(evaluation[4], 4),
               " (",
               code ,
               ")",
