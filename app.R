@@ -847,9 +847,8 @@ ui <- fluidPage(
       ),
       br(),
       p(
-        "A. Chao-Ecija, M.S. Dawid-Milner, BaroWavelet: An R-based tool for dynamic 
-     baroreflex evaluation through wavelet analysis techniques, Comput Methods 
-     Programs Biomed. 242 (2023) 107758. <https://doi.org/10.1016/j.cmpb.2023.107758.>",
+        "Chao-Ecija A, Dawid-Milner MS. BaroWavelet: An R-based tool for dynamic baroreflex evaluation through wavelet 
+        analysis techniques. Comput Methods Programs Biomed. 2023 Dec;242:107758. doi: 10.1016/j.cmpb.2023.107758.",
         style = "text-align:justify;color:black;background-color:white;padding:15px;border-radius:10px"
       ),
       br(),
